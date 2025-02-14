@@ -1,0 +1,99 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Corpo del sito */
+  body {
+    font-family: 'Arial', sans-serif;
+    color: #2E8B57;
+    background-color: #FFFFFF;
+    line-height: 1.6;
+  }
+  
+
+  /* Parallax */
+  .parallax-container {
+    background-image: url("../img/background.png"); /* Sostituisci con il tuo sfondo */
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.parallax-content {
+    background-color: #4CAF50; /* Verde centrale */
+    border: 5px solid #f1f1f1; /* Bordo bianco/grigio chiaro */
+    border-radius: 50%;
+    padding: 50px;
+    text-align: center;
+    width: 470px;
+    height: 470px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.parallax-content h1,
+.parallax-content p {
+    color: white;
+    margin: 0;
+}
+
+  
+  /* Home Section */
+  #home {
+    padding: 60px 0;
+  }
+  
+  .card-img-top {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .card-body {
+    text-align: center;
+  }
+  
+  #about {
+    background-color: #F4F4F4;
+  }
+  
+  #about h2 {
+    font-size: 2rem;
+    color: #2E8B57;
+  }
+  
+
+  
+  /* Media queries per dispositivi mobili */
+  @media (max-width: 768px) {
+    .parallax-container {
+      height: 300px;
+    }
+  }
+
+  .navbar {
+    background-color: #28a745 !important; /* Verde scuro */
+
+}
+
+.navbar .nav-link {
+    color: white !important;
+    font-size: 18px;
+}
+.nav-link:hover{
+  background-color:#2E8B57;
+
+}
+.navbar .navbar-brand {
+    color: white !important;
+}
+
+  
