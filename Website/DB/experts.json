@@ -1,0 +1,45 @@
+[
+    {
+      "id": 1,
+      "name": "Quantum Trader",
+      "creator": "John Doe",
+      "description": "Un Expert Advisor avanzato basato su algoritmi quantistici per massimizzare i profitti.",
+      "performance": {
+        "roi": 12.5,
+        "risk_level": "Medio",
+        "win_rate": 78
+      },
+      "price": "$199",
+      "image": "img/ea1.jpg",
+      "historical_data": "data/ea1_performance.json"
+    },
+    {
+      "id": 2,
+      "name": "AI Scalper",
+      "creator": "Jane Smith",
+      "description": "Un EA progettato per il trading ad alta frequenza con intelligenza artificiale.",
+      "performance": {
+        "roi": 9.8,
+        "risk_level": "Alto",
+        "win_rate": 85
+      },
+      "price": "$249",
+      "image": "img/ea2.jpg",
+      "historical_data": "data/ea2_performance.json"
+    },
+    {
+      "id": 3,
+      "name": "Neural Profit",
+      "creator": "Mike Johnson",
+      "description": "Utilizza reti neurali per adattarsi dinamicamente alle condizioni di mercato.",
+      "performance": {
+        "roi": 15.2,
+        "risk_level": "Basso",
+        "win_rate": 72
+      },
+      "price": "$299",
+      "image": "img/ea3.jpg",
+      "historical_data": "data/ea3_performance.json"
+    }
+  ]
+  
