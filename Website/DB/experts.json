@@ -1,45 +1,142 @@
 [
-    {
-      "id": 1,
-      "name": "Quantum Trader",
-      "creator": "John Doe",
-      "description": "Un Expert Advisor avanzato basato su algoritmi quantistici per massimizzare i profitti.",
-      "performance": {
-        "roi": 12.5,
-        "risk_level": "Medio",
-        "win_rate": 78
-      },
-      "price": "$199",
-      "image": "img/ea1.jpg",
-      "historical_data": "data/ea1_performance.json"
+  {
+    "id": 1,
+    "name": "Quantum Trader",
+    "creator": "John Doe",
+    "description": "Un Expert Advisor avanzato basato su algoritmi quantistici per massimizzare i profitti.",
+    "performance": {
+      "roi": 12.5,
+      "risk_level": "Medio",
+      "win_rate": 78
     },
-    {
-      "id": 2,
-      "name": "AI Scalper",
-      "creator": "Jane Smith",
-      "description": "Un EA progettato per il trading ad alta frequenza con intelligenza artificiale.",
-      "performance": {
-        "roi": 9.8,
-        "risk_level": "Alto",
-        "win_rate": 85
-      },
-      "price": "$249",
-      "image": "img/ea2.jpg",
-      "historical_data": "data/ea2_performance.json"
+    "price": "$199",
+    "image": "Quantum Trader.webp",
+    "historical_data": "Quantum Trader.json"
+  },
+  {
+    "id": 2,
+    "name": "AI Scalper",
+    "creator": "Jane Smith",
+    "description": "Un EA progettato per il trading ad alta frequenza con intelligenza artificiale.",
+    "performance": {
+      "roi": 9.8,
+      "risk_level": "Alto",
+      "win_rate": 85
     },
-    {
-      "id": 3,
-      "name": "Neural Profit",
-      "creator": "Mike Johnson",
-      "description": "Utilizza reti neurali per adattarsi dinamicamente alle condizioni di mercato.",
-      "performance": {
-        "roi": 15.2,
-        "risk_level": "Basso",
-        "win_rate": 72
-      },
-      "price": "$299",
-      "image": "img/ea3.jpg",
-      "historical_data": "data/ea3_performance.json"
-    }
-  ]
-  
+    "price": "$249",
+    "image": "AI Scalper.webp",
+    "historical_data": "AI Scalper.json"
+  },
+  {
+    "id": 3,
+    "name": "Neural Profit",
+    "creator": "Mike Johnson",
+    "description": "Utilizza reti neurali per adattarsi dinamicamente alle condizioni di mercato.",
+    "performance": {
+      "roi": 15.2,
+      "risk_level": "Basso",
+      "win_rate": 72
+    },
+    "price": "$299",
+    "image": "Neural Profit.webp",
+    "historical_data": "Neural Profit.json"
+  },
+  {
+    "id": 4,
+    "name": "Momentum Master",
+    "creator": "Emily Davis",
+    "description": "EA che sfrutta i movimenti di prezzo a breve termine per ottenere profitti rapidi.",
+    "performance": {
+      "roi": 18.7,
+      "risk_level": "Alto",
+      "win_rate": 80
+    },
+    "price": "$279",
+    "image": "Momentum Master.webp",
+    "historical_data": "Momentum Master.json"
+  },
+  {
+    "id": 5,
+    "name": "Trend Follower",
+    "creator": "Robert Brown",
+    "description": "Un EA che segue le tendenze del mercato per ottenere guadagni costanti.",
+    "performance": {
+      "roi": 11.3,
+      "risk_level": "Medio",
+      "win_rate": 75
+    },
+    "price": "$229",
+    "image": "Trend Follower.webp",
+    "historical_data": "Trend Follower.json"
+  },
+  {
+    "id": 6,
+    "name": "RiskGuard Pro",
+    "creator": "Sarah White",
+    "description": "Un EA progettato per ridurre i rischi e massimizzare i guadagni.",
+    "performance": {
+      "roi": 7.5,
+      "risk_level": "Basso",
+      "win_rate": 85
+    },
+    "price": "$199",
+    "image": "RiskGuard Pro.webp",
+    "historical_data": "RiskGuard Pro.json"
+  },
+  {
+    "id": 7,
+    "name": "Smart Arbitrage",
+    "creator": "David Green",
+    "description": "Utilizza strategie di arbitraggio per trarre profitto dalle discrepanze di prezzo.",
+    "performance": {
+      "roi": 20.5,
+      "risk_level": "Medio",
+      "win_rate": 70
+    },
+    "price": "$349",
+    "image": "Smart Arbitrage.webp",
+    "historical_data": "Smart Arbitrage.json"
+  },
+  {
+    "id": 8,
+    "name": "Scalper X",
+    "creator": "Sophia Lee",
+    "description": "Un EA ultra-rapido che esegue operazioni a bassa latenza e su timeframe bassi.",
+    "performance": {
+      "roi": 9.0,
+      "risk_level": "Alto",
+      "win_rate": 90
+    },
+    "price": "$259",
+    "image": "Scalper X.webp",
+    "historical_data": "Scalper X.json"
+  },
+  {
+    "id": 9,
+    "name": "Market Sentinel",
+    "creator": "William Harris",
+    "description": "Un EA che monitora il mercato e avvisa quando è il momento migliore per operare.",
+    "performance": {
+      "roi": 12.1,
+      "risk_level": "Basso",
+      "win_rate": 82
+    },
+    "price": "$239",
+    "image": "Market Sentinel.webp",
+    "historical_data": "Market Sentinel.json"
+  },
+  {
+    "id": 10,
+    "name": "Crypto Crusher",
+    "creator": "Liam Carter",
+    "description": "Ottimizzato per il trading delle criptovalute, offre strategie adattabili ai mercati volatile.",
+    "performance": {
+      "roi": 22.3,
+      "risk_level": "Alto",
+      "win_rate": 76
+    },
+    "price": "$319",
+    "image": "Crypto Crusher.webp",
+    "historical_data": "Crypto Crusher.json"
+  }
+]
