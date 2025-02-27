@@ -19,6 +19,7 @@ app.use(fileUpload());
 let receivedData: Record<string, any> = {};
 
 // Endpoint POST per ricevere i dati
+app.get('/api/EA', (req, res) => {});
 app.post('/post', (req:any, res:any) => {
     console.log('Dati ricevuti:', req.body);
 
