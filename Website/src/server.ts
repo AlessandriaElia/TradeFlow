@@ -118,7 +118,7 @@ app.get('/api/getEAs', async (req, res) => {
 
         // Funzione per calcolare il punteggio
         const calculateScore = (performance) => {
-            const { roi, win_rate, risk_level } = performance;
+            const { roi, win_rate, risk_level, stars } = performance;
             let riskScore = 0;
 
             // Converte il risk_level in valore numerico
@@ -138,7 +138,8 @@ app.get('/api/getEAs', async (req, res) => {
             }
 
             // Calcoliamo una media ponderata dei tre valori
-            return (roi + win_rate + (10 - riskScore)) / 3;
+            return (roi + win_rate + (10 - riskScore) + stars) / 4;
+
         };
 
         // Aggiungiamo un campo "score" a ciascun EA per il punteggio calcolato

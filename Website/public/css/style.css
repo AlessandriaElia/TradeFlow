@@ -129,69 +129,84 @@
 
   background-color:   #00154B;
 }
-.ea-card .card {
-  position: relative;
+
+.ea-card {
+  perspective: 1000px;
+}
+
+.card {
   width: 100%;
-  height: 350px;
-  overflow: hidden;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  height: 320px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
 }
 
-.ea-card .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+.card:hover {
+  transform: rotateY(180deg);
 }
 
-.card-front, .card-back {
-  position: absolute;
+.card-front,
+.card-back {
   width: 100%;
   height: 100%;
-  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-}
-
-.card-front {
-  background: white;
+  position: absolute;
+  backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
+  padding: 15px;
   border-radius: 10px;
 }
 
+.card-front {
+  background-color: #3A75C4;
+  color: gold;
+}
+
+.card-front img {
+  width: 100%;
+  height: 120px;
+  object-fit: contain;
+}
+
 .card-back {
-  background: #3A75C4;
+  background-color: #1e2a47;
   color: white;
-  padding: 20px;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(20px);
+  transform: rotateY(180deg);
 }
 
-.ea-card:hover .card-front {
-  opacity: 0;
-  transform: translateY(-20px);
+.stars {
+  color: gold;
+  font-size: 1.2rem;
+  margin: 5px 0;
 }
 
-.ea-card:hover .card-back {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.card-back {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Distribuisce il contenuto */
-  align-items: center;
-  padding: 15px;
-  height: 100%; /* Assicura che occupi tutta l'altezza della card */
+.review-count {
+  font-size: 0.9rem;
+  color: lightgray;
 }
 
 .card-price {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: bold;
-  color: gold;
-  margin-top: auto; /* Spinge il prezzo in basso */
+  color: #fff;
 }
+
+.btn-gold {
+  background-color: gold;
+  color: black;
+  padding: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 5px;
+  display: inline-block;
+  transition: background 0.3s;
+}
+
+.btn-gold:hover {
+  background-color: darkgoldenrod;
+}
+

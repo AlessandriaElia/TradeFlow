@@ -9,7 +9,9 @@
       "risk_level": "Medio",
       "win_rate": 78
     },
-    "price": "$199",
+    "price": 199,
+    "stars": 4,
+    "reviews": 120,
     "image": "Quantum Trader.webp",
     "historical_data": "Quantum Trader.json"
   },
@@ -23,7 +25,9 @@
       "risk_level": "Alto",
       "win_rate": 85
     },
-    "price": "$249",
+    "price": 249,
+    "stars": 5,
+    "reviews": 200,
     "image": "AI Scalper.webp",
     "historical_data": "AI Scalper.json"
   },
@@ -37,7 +41,9 @@
       "risk_level": "Basso",
       "win_rate": 72
     },
-    "price": "$299",
+    "price": 299,
+    "stars": 4,
+    "reviews": 95,
     "image": "Neural Profit.webp",
     "historical_data": "Neural Profit.json"
   },
@@ -51,7 +57,9 @@
       "risk_level": "Alto",
       "win_rate": 80
     },
-    "price": "$279",
+    "price": 279,
+    "stars": 3,
+    "reviews": 75,
     "image": "Momentum Master.webp",
     "historical_data": "Momentum Master.json"
   },
@@ -65,7 +73,9 @@
       "risk_level": "Medio",
       "win_rate": 75
     },
-    "price": "$229",
+    "price": 229,
+    "stars": 4,
+    "reviews": 110,
     "image": "Trend Follower.webp",
     "historical_data": "Trend Follower.json"
   },
@@ -79,7 +89,9 @@
       "risk_level": "Basso",
       "win_rate": 85
     },
-    "price": "$199",
+    "price": 199,
+    "stars": 5,
+    "reviews": 140,
     "image": "RiskGuard Pro.webp",
     "historical_data": "RiskGuard Pro.json"
   },
@@ -93,7 +105,9 @@
       "risk_level": "Medio",
       "win_rate": 70
     },
-    "price": "$349",
+    "price": 349,
+    "stars": 4,
+    "reviews": 85,
     "image": "Smart Arbitrage.webp",
     "historical_data": "Smart Arbitrage.json"
   },
@@ -107,7 +121,9 @@
       "risk_level": "Alto",
       "win_rate": 90
     },
-    "price": "$259",
+    "price": 259,
+    "stars": 3,
+    "reviews": 60,
     "image": "Scalper X.webp",
     "historical_data": "Scalper X.json"
   },
@@ -121,7 +137,9 @@
       "risk_level": "Basso",
       "win_rate": 82
     },
-    "price": "$239",
+    "price": 239,
+    "stars": 5,
+    "reviews": 180,
     "image": "Market Sentinel.webp",
     "historical_data": "Market Sentinel.json"
   },
@@ -135,7 +153,9 @@
       "risk_level": "Alto",
       "win_rate": 76
     },
-    "price": "$319",
+    "price": 319,
+    "stars": 4,
+    "reviews": 130,
     "image": "Crypto Crusher.webp",
     "historical_data": "Crypto Crusher.json"
   }

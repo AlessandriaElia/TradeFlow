@@ -11,9 +11,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
     crossorigin="anonymous"></script>
 
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="libreria.js"></script>
-    <script src="index.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="libreria.js"></script>
+  <script src="index.js"></script>
 </head>
 
 <body>
@@ -71,33 +71,21 @@
   </header>
 
   <!-- Sezione Base -->
-  <section id="best-ea" class="py-5" >
-    <div class="container" >
+  <section id="best-ea" class="py-5">
+    <div class="container">
       <h2 class="text-center mb-4" style="color: gold;">Il nostro mercato di Expert Advisors</h2>
-      <div class="filters text-center mb-4" style="border: 1px solid gold; padding:10px">
-        <button class="btn filter-btn" data-filter="popular" style="background-color: gold;">Popolare</button>
-        <button class="btn filter-btn" data-filter="new"style="background-color: gold;">Nuovo</button>
-        <button class="btn filter-btn" data-filter="free"style="background-color: gold;">Gratuito</button>
-        <button class="btn filter-btn" data-filter="paid"style="background-color: gold;">A pagamento</button>
-    </div>
-    
-      <div class="row justify-content-center" id="bestEaList" style="border: 1px solid gold; padding-top:25px; margin-top: -25px; height:800px;">
-        <!-- <div class="col-md-4 col-lg-3 mb-4" data-category="popular"> -->
-        <!-- <div class="card"> -->
-        <!-- <img src="img/ea1.jpg" class="card-img-top" alt="EA1"> -->
-        <!-- <div class="card-body"> -->
-        <!-- <h5 class="card-title">EA1</h5> -->
-        <!-- <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p> -->
-        <!-- <a href="#" class="btn btn-primary">Dettagli</a> -->
-        <!-- </div> -->
-        <!-- </div> -->
-        <!-- </div> -->
-        
-        
+      <div class="filters mb-4" style="border: 1px solid gold; padding:10px; display: flex; flex-wrap: wrap; gap: 10px;">
+        <button class="btn filter-btn" data-filter="popular" style="background-color: gold;">Migliori</button>
+        <button class="btn filter-btn" data-filter="new" style="background-color: gold;">Nuovo</button>
+        <button class="btn filter-btn" data-filter="free" style="background-color: gold;">Gratuito</button>
+        <button class="btn filter-btn" data-filter="paid" style="background-color: gold;">A pagamento</button><br>
+        <button class="btn filter-btn" data-filter="all" style="background-color: gold;">Tutti</button>
+        <input type="text" class="form-control" id="search" placeholder="Cerca EA...">
+      </div>
+
+      <div class="row justify-content-center" id="bestEaList"
+        style="border: 1px solid gold; padding-top:25px; margin-top: -25px; height:800px;">
+        <!-- Dynamic EA cards will appear here -->
       </div>
     </div>
   </section>
-  </div>
-</body>
-
-</html>
