@@ -161,3 +161,4 @@ app.get('/api/getEAs', async (req, res) => {
         client.close();
     }
 });
+

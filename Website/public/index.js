@@ -1,34 +1,35 @@
 "use strict";
-    $(document).ready(function () {
-        let bestEaList = $("#bestEaList");
-        let eaData = []; // Store EA data globally
+$(document).ready(function () {
+    let bestEaList = $("#bestEaList");
+    let eaData = []; // Store EA data globally
 
-        // Fetch and display the Expert Advisors
-        getEAs();
+    // Fetch and display the Expert Advisors
+    getEAs();
+    fetchData();
 
-        // Function to make a GET request for fetching EAs
-        async function getEAs() {
-            let rq = await inviaRichiesta("GET", "/api/getEAs");
-            if (rq.status == 401) {
-                alert("Errore nella richiesta");
-            } else if (rq.status == 200) {
-                console.log("EA ricevuti");
-                eaData = rq.data; // Store data globally
-                displayEAs(eaData); // Display EAs when data is fetched
+    // Function to make a GET request for fetching EAs
+    async function getEAs() {
+        let rq = await inviaRichiesta("GET", "/api/getEAs");
+        if (rq.status == 401) {
+            alert("Errore nella richiesta");
+        } else if (rq.status == 200) {
+            console.log("EA ricevuti");
+            eaData = rq.data; // Store data globally
+            displayEAs(eaData); // Display EAs when data is fetched
 
-                // Event listener for hovering over EA cards
-                $(".ea-card .card").hover(function () {
-                    $(this).toggleClass("flipped");
-                });
-            }
+            // Event listener for hovering over EA cards
+            $(".ea-card .card").hover(function () {
+                $(this).toggleClass("flipped");
+            });
         }
+    }
 
-        // Function to display EAs
-        function displayEAs(eas) {
-            bestEaList.empty(); // Clear the current list
-            eas.forEach(ea => {
-                const stars = '★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars));
-                const card = `
+    // Function to display EAs
+    function displayEAs(eas) {
+        bestEaList.empty(); // Clear the current list
+        eas.forEach(ea => {
+            const stars = '★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars));
+            const card = `
                 <div class="col-md-3 mb-4 ea-card">
                     <div class="card">
                         <div class="card-front">
@@ -49,39 +50,60 @@
                     </div>
                 </div>
                 `;
-                bestEaList.append(card);
+            bestEaList.append(card);
+        });
+    }
+
+    // Filter button click handling
+    $(".filter-btn").click(function () {
+        $(".filter-btn").css("background-color", "gold"); // Reset all buttons to original color
+        $(this).css("background-color", "#ffcc00"); // Highlight clicked button
+
+        let filter = $(this).data("filter");
+
+        // Apply filter
+        let filteredEAs = eaData;
+        if (filter !== "all") {
+            filteredEAs = eaData.filter(ea => {
+                if (filter === "popular" && ea.stars >= 4) return true;
+                if (filter === "new" && ea.isNew) return true;
+                if (filter === "free" && ea.price === 0) return true;
+                if (filter === "paid" && ea.price > 0) return true;
+                return false;
             });
         }
 
-        // Filter button click handling
-        $(".filter-btn").click(function () {
-            $(".filter-btn").css("background-color", "gold"); // Reset all buttons to original color
-            $(this).css("background-color", "#ffcc00"); // Highlight clicked button
-
-            let filter = $(this).data("filter");
-
-            // Apply filter
-            let filteredEAs = eaData;
-            if (filter !== "all") {
-                filteredEAs = eaData.filter(ea => {
-                    if (filter === "popular" && ea.stars >= 4) return true;
-                    if (filter === "new" && ea.isNew) return true;
-                    if (filter === "free" && ea.price === 0) return true;
-                    if (filter === "paid" && ea.price > 0) return true;
-                    return false;
-                });
-            }
-
-            // Display filtered EAs
-            displayEAs(filteredEAs);
-        });
-
-        // Search functionality
-        $("#search").on("input", function () {
-            let query = $(this).val().toLowerCase();
-            let searchedEAs = eaData.filter(ea => {
-                return ea.name.toLowerCase().includes(query) || ea.description.toLowerCase().includes(query);
-            });
-            displayEAs(searchedEAs); // Display the search results
-        });
+        // Display filtered EAs
+        displayEAs(filteredEAs);
     });
+
+    // Search functionality
+    $("#search").on("input", function () {
+        let query = $(this).val().toLowerCase();
+        let searchedEAs = eaData.filter(ea => {
+            return ea.name.toLowerCase().includes(query) || ea.description.toLowerCase().includes(query);
+        });
+        displayEAs(searchedEAs); // Display the search results
+    });
+
+
+    // Funzione per recuperare i dati dal server
+    async function fetchData() {
+        try {
+            const response = await fetch('http://localhost:5000/received-data');
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // Visualizza i dati nella pagina
+                const pre = document.getElementById('received-data');
+                pre.textContent = JSON.stringify(data.receivedData, null, 2);
+            } else {
+                console.error('Errore nel recupero dei dati:', data.message);
+            }
+        } catch (error) {
+            console.error('Errore nella richiesta:', error);
+        }
+    }
+
+    
+});
