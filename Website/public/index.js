@@ -1,17 +1,13 @@
 "use strict";
 $(document).ready(function () {
     let bestEaList = $("#bestEaList");
-    let eaData = []; // Store EA data globally
+    let eaData = []; 
 
-    // Fetch and display the Expert Advisors
     fetchData();
-    logEAs(); // Chiamata automatica per loggare i dati
+    logEAs(); 
 
-
-
-    // Function to display EAs
     function displayEAs(eas) {
-        bestEaList.empty(); // Clear the current list
+        bestEaList.empty();
         eas.forEach(ea => {
             const stars = '★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars));
             const card = `
@@ -41,14 +37,12 @@ $(document).ready(function () {
         });
     }
 
-    // Filter button click handling
     $(".filter-btn").click(function () {
-        $(".filter-btn").css("background-color", "gold"); // Reset all buttons to original color
-        $(this).css("background-color", "#ffcc00"); // Highlight clicked button
+        $(".filter-btn").css("background-color", "gold");
+        $(this).css("background-color", "#ffcc00"); 
 
         let filter = $(this).data("filter");
 
-        // Apply filter
         let filteredEAs = eaData;
         if (filter !== "all") {
             filteredEAs = eaData.filter(ea => {
@@ -60,27 +54,23 @@ $(document).ready(function () {
             });
         }
 
-        // Display filtered EAs
         displayEAs(filteredEAs);
     });
 
-    // Search functionality
     $("#search").on("input", function () {
         let query = $(this).val().toLowerCase();
         let searchedEAs = eaData.filter(ea => {
             return ea.name.toLowerCase().includes(query) || ea.description.toLowerCase().includes(query);
         });
-        displayEAs(searchedEAs); // Display the search results
+        displayEAs(searchedEAs); 
     });
 
-    // Funzione per recuperare i dati dal server
     async function fetchData() {
         try {
             const response = await fetch("http://localhost:5000/received-data");
             const data = await response.json();
 
             if (data.status === "success") {
-                // Visualizza i dati nella pagina
                 const pre = document.getElementById("received-data");
                 pre.textContent = JSON.stringify(data.receivedData, null, 2);
             } else {
@@ -91,7 +81,6 @@ $(document).ready(function () {
         }
     }
 
-    // Funzione per loggare i dati generati dagli Expert Advisors
     async function logEAs() {
         try {
             const response = await fetch("http://localhost:5000/api/generateEAs?N=5");
@@ -99,7 +88,7 @@ $(document).ready(function () {
 
             if (data.status === "success") {
                 console.log("Dati generati degli Expert Advisors:", data.experts);
-                displayEAs(data.experts); // Visualizza gli Expert Advisors
+                displayEAs(data.experts); 
             } else {
                 console.error("Errore nel recupero degli Expert Advisors:", data.message);
             }

@@ -105,7 +105,6 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 /* ********************** API PER GENERARE EAs ********************** */
 
-// Funzioni per numeri casuali
 function randomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -127,28 +126,21 @@ function randomCase(min: number, max: number): string {
 const randomFloat = (min: number, max: number): number =>
   parseFloat((Math.random() * (max - min) + min).toFixed(2));
 
-// Function to generate performance data based on trend
-function generatePerformanceData(trend: string): number[] {
+function generatePerformanceData(roi: number, winRate: number): number[] {
   const data = [];
-  let value = randomFloat(50, 100); // Start value
+  let value = 5000; // Starting value
 
   for (let i = 0; i < 30; i++) {
-    if (trend === "uptrend") {
-      value += randomFloat(0, 5); // Increase value
-    } else if (trend === "downtrend") {
-      value -= randomFloat(0, 5); // Decrease value
-    } else {
-      value += randomFloat(-2, 2); // Small fluctuations
-    }
+    const change = (roi / 100) * (winRate / 100) * (Math.random() * 2 - 1); // Change based on ROI and win rate
+    value += value * change;
     data.push(parseFloat(value.toFixed(2)));
   }
 
   return data;
 }
 
-// Endpoint per generare Expert Advisors casuali
 app.get("/api/generateEAs", async (req: any, res: any) => {
-  const N = parseInt(req.query.N as string) || 5; // Numero di EAs da generare (default 5)
+  const N = parseInt(req.query.N as string) || 5; 
 
   if (N <= 0) {
     return res
@@ -156,9 +148,9 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
       .json({ error: "Il numero di Expert Advisors deve essere maggiore di 0" });
   }
 
-  const trends = ["uptrend", "downtrend", "consolidation"];
   const generateEA = () => {
-    const trend = trends[randomInt(0, trends.length - 1)];
+    const roi = randomFloat(5, 50);
+    const winRate = randomInt(50, 95);
     return {
       id: randomInt(1, 10000),
       name: dictionary.names[randomInt(0, dictionary.names.length - 1)],
@@ -166,11 +158,10 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
       description:
         dictionary.descriptions[randomInt(0, dictionary.descriptions.length - 1)],
       performance: {
-        roi: randomFloat(5, 50),
+        roi: roi,
         risk_level: randomCase(1, 3),
-        win_rate: randomInt(50, 95),
-        trend: trend,
-        data: generatePerformanceData(trend)
+        win_rate: winRate,
+        data: generatePerformanceData(roi, winRate)
       },
       price: randomInt(50, 500),
       stars: randomInt(1, 5),
@@ -182,7 +173,6 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
 
   const generatedEAs = Array.from({ length: N }, generateEA);
 
-  // Save generated EAs to experts.json
   fs.writeFile("./DB/experts.json", JSON.stringify(generatedEAs, null, 2), (err) => {
     if (err) {
       console.error("Errore nel salvataggio degli Expert Advisors:", err);
@@ -192,11 +182,9 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
   });
 });
 
-// Endpoint to generate HTML page for each Expert Advisor
 app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
   const eaId = parseInt(req.params.id);
 
-  // Read from experts.json
   fs.readFile("./DB/experts.json", "utf8", (err, data) => {
     if (err) {
       console.error("Errore nel caricamento degli Expert Advisors:", err);
@@ -210,6 +198,90 @@ app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
       return res.status(404).send("Expert Advisor not found");
     }
 
+    // Calcoliamo le informazioni aggiuntive
+    const firstValue = ea.performance.data[0];
+    const lastValue = ea.performance.data[ea.performance.data.length - 1];
+    let gain = (lastValue - firstValue) / firstValue * 100;
+    gain = parseFloat(gain.toFixed(2));
+
+    const calculateWinRate = (data: number[]): number => {
+      let winningTrades = 0;
+
+      // Confronta i dati adiacenti (data[i] con data[i+1])
+      for (let i = 0; i < data.length - 1; i++) {
+        if (data[i] < data[i + 1]) { // Se il valore successivo è maggiore, il trade è profittevole
+          winningTrades++;
+        }
+      }
+
+      // Calcola il win rate come percentuale
+      const winRate = (winningTrades / (data.length - 1)) * 100;
+
+      return winRate;
+    };
+
+    const calculateDrawdown = (data: number[]): number => {
+      let peak = data[0];
+      let maxDrawdown = 0;
+
+      for (let i = 1; i < data.length; i++) {
+        if (data[i] > peak) {
+          peak = data[i]; // Nuovo massimo
+        }
+        const drawdown = (peak - data[i]) / peak * 100; // Calcola la perdita percentuale
+        if (drawdown > maxDrawdown) {
+          maxDrawdown = drawdown; // Trova il massimo drawdown
+        }
+      }
+
+      return maxDrawdown;
+    };
+
+    // Calcoliamo il massimo drawdown
+    const drawdown = calculateDrawdown(ea.performance.data);
+    console.log("Maximum Drawdown:", drawdown.toFixed(2), "%");
+
+    // Calcoliamo il win rate
+    let winRate = calculateWinRate(ea.performance.data);
+    winRate = parseFloat(winRate.toFixed(2));
+
+    // Aggiungiamo altre informazioni come il rendimento medio e il numero di operazioni
+    const averagePerformance = ea.performance.data.reduce((sum: number, value: number) => sum + value, 0) / ea.performance.data.length;
+    const numberOfTrades = ea.performance.data.length - 1; // Una "trade" è un cambiamento tra due punti
+    const calculateSharpeRatio = (data: number[], riskFreeRate: number): number => {
+      const dailyReturns: number[] = [];
+      
+      // Calcola i rendimenti giornalieri (percentuali)
+      for (let i = 1; i < data.length; i++) {
+        const dailyReturn = (data[i] - data[i - 1]) / data[i - 1];
+        dailyReturns.push(dailyReturn);
+      }
+      
+      // Calcola il rendimento medio dell'EA
+      const averageReturn = dailyReturns.reduce((acc, value) => acc + value, 0) / dailyReturns.length;
+      
+      // Calcola la deviazione standard (volatilità) dei rendimenti giornalieri
+      const variance = dailyReturns.reduce((acc, value) => acc + Math.pow(value - averageReturn, 2), 0) / dailyReturns.length;
+      const volatility = Math.sqrt(variance);
+      
+      // Calcola lo Sharpe Ratio
+      const sharpeRatio = (averageReturn - riskFreeRate) / volatility;
+      
+      return parseFloat(sharpeRatio.toFixed(2));
+    };
+
+    let sharpeRatio = calculateSharpeRatio(ea.performance.data, 0.01);
+
+    const calculateTotalProfitPercentage = (data: number[]): number => {
+      const initialValue = data[0];
+      const finalValue = data[data.length - 1];
+      
+      const profitPercentage = ((finalValue - initialValue) / initialValue) * 100;
+      
+      return parseFloat(profitPercentage.toFixed(2));
+    };
+
+    let totalProfitPercentage = calculateTotalProfitPercentage(ea.performance.data);
     const htmlContent = `
       <!DOCTYPE html>
       <html lang="en">
@@ -217,18 +289,107 @@ app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${ea.name}</title>
-        <link rel="stylesheet" href="/path/to/your/css/styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/styles.css">
       </head>
       <body>
-        <h1>${ea.name}</h1>
-        <p>Creator: ${ea.creator}</p>
-        <p>Description: ${ea.description}</p>
-        <p>Price: ${ea.price} USD</p>
-        <p>Stars: ${'★'.repeat(ea.stars)}${'☆'.repeat(5 - ea.stars)}</p>
-        <p>Reviews: ${ea.reviews}</p>
-        <img src="img/EAs/${ea.name}.png" alt="${ea.name}">
-        <canvas id="performanceChart"></canvas>
+        <div class="container mt-5">
+          <div class="card">
+            <div class="card-header">
+              <h1>${ea.name}</h1>
+            </div>
+            <div class="card-body">
+              <p><strong>Creator:</strong> ${ea.creator}</p>
+              <p><strong>Description:</strong> ${ea.description}</p>
+              <p><strong>Price:</strong> ${ea.price} USD</p>
+              <p><strong>Stars:</strong> ${'★'.repeat(ea.stars)}${'☆'.repeat(5 - ea.stars)}</p>
+              <p><strong>Reviews:</strong> ${ea.reviews}</p>
+              <img src="img/EAs/${ea.name}.png" alt="${ea.name}" class="img-fluid mb-3">
+              
+              <!-- Statistiche -->
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="stat card text-center">
+                    <div class="card-body">
+                      <h3 class="card-title">Gain</h3>
+                      <p class="card-text">${gain}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center">
+                    <div class="card-body">
+                      <h3 class="card-title">Risk Level</h3>
+                      <p class="card-text">${ea.performance.risk_level}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center">
+                    <div class="card-body">
+                      <h3 class="card-title">Win Rate</h3>
+                      <p class="card-text">${winRate}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center">
+                    <div class="card-body">
+                      <h3 class="card-title">A. Performance</h3>
+                      <p class="card-text">${averagePerformance.toFixed(2)} USD</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nuove informazioni -->
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="stat card text-center" style="margin-top:15px;">
+                    <div class="card-body">
+                      <h3 class="card-title">Max Drawdown</h3>
+                      <p class="card-text">${drawdown.toFixed(2)}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center" style="margin-top:15px;">
+                    <div class="card-body">
+                      <h3 class="card-title">N. Trades</h3>
+                      <p class="card-text">${numberOfTrades}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center" style="margin-top:15px;">
+                    <div class="card-body">
+                      <h3 class="card-title">Sharpe Ratio</h3>
+                      <p class="card-text">${sharpeRatio}</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="stat card text-center" style="margin-top:15px;">
+                    <div class="card-body">
+                      <h3 class="card-title">Total Profit</h3>
+                      <p class="card-text">${totalProfitPercentage}%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Performance Chart -->
+              <div class="chart-container mb-3">
+                <canvas id="performanceChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
           async function fetchPerformanceData() {
             const response = await fetch('/api/generatePerformanceData/${eaId}');
@@ -264,11 +425,10 @@ app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
   });
 });
 
-// Endpoint to generate realistic trading bot performance data
+
 app.get("/api/generatePerformanceData/:id", (req: any, res: any) => {
   const eaId = parseInt(req.params.id);
 
-  // Read from experts.json
   fs.readFile("./DB/experts.json", "utf8", (err, data) => {
     if (err) {
       console.error("Errore nel caricamento degli Expert Advisors:", err);
