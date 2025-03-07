@@ -127,10 +127,27 @@ function randomCase(min: number, max: number): string {
 const randomFloat = (min: number, max: number): number =>
   parseFloat((Math.random() * (max - min) + min).toFixed(2));
 
+// Function to generate performance data based on trend
+function generatePerformanceData(trend: string): number[] {
+  const data = [];
+  let value = randomFloat(50, 100); // Start value
 
+  for (let i = 0; i < 30; i++) {
+    if (trend === "uptrend") {
+      value += randomFloat(0, 5); // Increase value
+    } else if (trend === "downtrend") {
+      value -= randomFloat(0, 5); // Decrease value
+    } else {
+      value += randomFloat(-2, 2); // Small fluctuations
+    }
+    data.push(parseFloat(value.toFixed(2)));
+  }
+
+  return data;
+}
 
 // Endpoint per generare Expert Advisors casuali
-app.get("/api/generateEAs", async (req:any, res:any) => {
+app.get("/api/generateEAs", async (req: any, res: any) => {
   const N = parseInt(req.query.N as string) || 5; // Numero di EAs da generare (default 5)
 
   if (N <= 0) {
@@ -139,7 +156,9 @@ app.get("/api/generateEAs", async (req:any, res:any) => {
       .json({ error: "Il numero di Expert Advisors deve essere maggiore di 0" });
   }
 
+  const trends = ["uptrend", "downtrend", "consolidation"];
   const generateEA = () => {
+    const trend = trends[randomInt(0, trends.length - 1)];
     return {
       id: randomInt(1, 10000),
       name: dictionary.names[randomInt(0, dictionary.names.length - 1)],
@@ -150,6 +169,8 @@ app.get("/api/generateEAs", async (req:any, res:any) => {
         roi: randomFloat(5, 50),
         risk_level: randomCase(1, 3),
         win_rate: randomInt(50, 95),
+        trend: trend,
+        data: generatePerformanceData(trend)
       },
       price: randomInt(50, 500),
       stars: randomInt(1, 5),
@@ -158,9 +179,112 @@ app.get("/api/generateEAs", async (req:any, res:any) => {
       historical_data: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.json`,
     };
   };
-  
 
   const generatedEAs = Array.from({ length: N }, generateEA);
 
-  res.json({ status: "success", experts: generatedEAs });
+  // Save generated EAs to experts.json
+  fs.writeFile("./DB/experts.json", JSON.stringify(generatedEAs, null, 2), (err) => {
+    if (err) {
+      console.error("Errore nel salvataggio degli Expert Advisors:", err);
+      return res.status(500).json({ error: "Errore nel salvataggio degli Expert Advisors" });
+    }
+    res.json({ status: "success", experts: generatedEAs });
+  });
+});
+
+// Endpoint to generate HTML page for each Expert Advisor
+app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
+  const eaId = parseInt(req.params.id);
+
+  // Read from experts.json
+  fs.readFile("./DB/experts.json", "utf8", (err, data) => {
+    if (err) {
+      console.error("Errore nel caricamento degli Expert Advisors:", err);
+      return res.status(500).send("Errore nel caricamento degli Expert Advisors");
+    }
+
+    const experts = JSON.parse(data);
+    const ea = experts.find((ea: any) => ea.id === eaId);
+
+    if (!ea) {
+      return res.status(404).send("Expert Advisor not found");
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${ea.name}</title>
+        <link rel="stylesheet" href="/path/to/your/css/styles.css">
+      </head>
+      <body>
+        <h1>${ea.name}</h1>
+        <p>Creator: ${ea.creator}</p>
+        <p>Description: ${ea.description}</p>
+        <p>Price: ${ea.price} USD</p>
+        <p>Stars: ${'★'.repeat(ea.stars)}${'☆'.repeat(5 - ea.stars)}</p>
+        <p>Reviews: ${ea.reviews}</p>
+        <img src="img/EAs/${ea.name}.png" alt="${ea.name}">
+        <canvas id="performanceChart"></canvas>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          async function fetchPerformanceData() {
+            const response = await fetch('/api/generatePerformanceData/${eaId}');
+            const data = await response.json();
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: data.labels,
+                datasets: [{
+                  label: 'Performance',
+                  data: data.values,
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          }
+          fetchPerformanceData();
+        </script>
+      </body>
+      </html>
+    `;
+
+    res.send(htmlContent);
+  });
+});
+
+// Endpoint to generate realistic trading bot performance data
+app.get("/api/generatePerformanceData/:id", (req: any, res: any) => {
+  const eaId = parseInt(req.params.id);
+
+  // Read from experts.json
+  fs.readFile("./DB/experts.json", "utf8", (err, data) => {
+    if (err) {
+      console.error("Errore nel caricamento degli Expert Advisors:", err);
+      return res.status(500).send("Errore nel caricamento degli Expert Advisors");
+    }
+
+    const experts = JSON.parse(data);
+    const ea = experts.find((ea: any) => ea.id === eaId);
+
+    if (!ea) {
+      return res.status(404).send("Expert Advisor not found");
+    }
+
+    const labels = Array.from({ length: 30 }, (_, i) => `Day ${i + 1}`);
+    const values = ea.performance.data;
+
+    res.json({ labels, values });
+  });
 });
