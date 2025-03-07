@@ -6,6 +6,7 @@ $(document).ready(function () {
     // Fetch and display the Expert Advisors
     getEAs();
     fetchData();
+    logEAs(); // Chiamata automatica per loggare i dati
 
     // Function to make a GET request for fetching EAs
     async function getEAs() {
@@ -86,24 +87,37 @@ $(document).ready(function () {
         displayEAs(searchedEAs); // Display the search results
     });
 
-
     // Funzione per recuperare i dati dal server
     async function fetchData() {
         try {
-            const response = await fetch('http://localhost:5000/received-data');
+            const response = await fetch("http://localhost:5000/received-data");
             const data = await response.json();
 
-            if (data.status === 'success') {
+            if (data.status === "success") {
                 // Visualizza i dati nella pagina
-                const pre = document.getElementById('received-data');
+                const pre = document.getElementById("received-data");
                 pre.textContent = JSON.stringify(data.receivedData, null, 2);
             } else {
-                console.error('Errore nel recupero dei dati:', data.message);
+                console.error("Errore nel recupero dei dati:", data.message);
             }
         } catch (error) {
-            console.error('Errore nella richiesta:', error);
+            console.error("Errore nella richiesta:", error);
         }
     }
 
-    
+    // Funzione per loggare i dati generati dagli Expert Advisors
+    async function logEAs() {
+        try {
+            const response = await fetch("http://localhost:5000/api/generateEAs?N=5");
+            const data = await response.json();
+
+            if (data.status === "success") {
+                console.log("Dati generati degli Expert Advisors:", data.experts);
+            } else {
+                console.error("Errore nel recupero degli Expert Advisors:", data.message);
+            }
+        } catch (error) {
+            console.error("Errore nella richiesta di generazione EA:", error);
+        }
+    }
 });

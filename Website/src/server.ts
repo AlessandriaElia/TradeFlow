@@ -3,32 +3,28 @@
 import http from "http";
 import fs from "fs";
 import express, { NextFunction, Request, Response } from "express";
-import { MongoClient, ObjectId } from "mongodb";
-import cors, { CorsOptions } from "cors";
+import { MongoClient } from "mongodb";
+import cors from "cors";
 import fileUpload from "express-fileupload";
-import url from 'url';
-import bodyParser from 'body-parser';
-import path from 'path';
+import bodyParser from "body-parser";
+import path from "path";
 
 /* ********************** MONGO CONFIG ********************* */
-// Stringa di connessione e nome del database specificati direttamente
-const connectionString = "mongodb://localhost:27017"; // Inserisci qui la tua stringa di connessione
-const DB_NAME = "ExpertAdvisor"; // Nome del database
+const connectionString = "mongodb://localhost:27017"; 
+const DB_NAME = "ExpertAdvisor"; 
 
 /* ********************** HTTP SERVER ********************** */
-// Configurazione del server HTTP
-const port = 5000; // Porta su cui gira il server
-let paginaErrore: string; // Contenuto della pagina di errore
-const app = express(); // Inizializzazione di Express
-const server = http.createServer(app); // Creazione del server HTTP
+const port = 5000; 
+let paginaErrore: string; 
+const app = express();
+const server = http.createServer(app);
 
-// Avvio del server
 server.listen(port, () => {
-  init(); // Caricamento della pagina di errore
+  init();
   console.log(`Server in esecuzione su http://localhost:${port}`);
 });
+let dictionary: any = {};
 
-// Funzione per caricare la pagina di errore
 function init() {
   fs.readFile("./static/error.html", (err, data) => {
     if (!err) {
@@ -37,19 +33,26 @@ function init() {
       paginaErrore = "<h1>Risorsa non trovata</h1>";
     }
   });
+  fs.readFile("./DB/dictionaries.json", "utf8", (err, data) => {
+    if (err) {
+        console.error("Errore nel caricamento del dizionario:", err);
+    } else {
+        dictionary = JSON.parse(data);
+        console.log("✅ Dizionario caricato correttamente!");
+    }
+});
 }
 
 /* ********************** MIDDLEWARE ********************** */
-// Questi middleware sono comuni e non devono essere toccati.
 app.use("/", (req: Request, res: Response, next: NextFunction) => {
   console.log(req.method + ": " + req.originalUrl);
   next();
 });
 
-app.use("/", express.static("./static")); // Risorse statiche
-app.use("/", express.json({ limit: "10mb" })); // Parametri JSON
-app.use("/", express.urlencoded({ limit: "10mb", extended: true })); // Parametri URL-encoded
-app.use("/", fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } })); // Configurazione file upload
+app.use("/", express.static("./static"));
+app.use("/", express.json({ limit: "10mb" }));
+app.use("/", express.urlencoded({ limit: "10mb", extended: true }));
+app.use("/", fileUpload({ limits: { fileSize: 10 * 1024 * 1024 } }));
 
 app.use("/", (req, res, next) => {
   if (Object.keys(req.query).length > 0) {
@@ -61,7 +64,6 @@ app.use("/", (req, res, next) => {
   next();
 });
 
-// Configurazione CORS
 const corsOptions = {
   origin: function (origin, callback) {
     return callback(null, true);
@@ -70,95 +72,95 @@ const corsOptions = {
 };
 app.use("/", cors(corsOptions));
 
-
 app.use(cors());
 app.use(bodyParser.json());
 app.use(fileUpload());
 
 let receivedData: Record<string, any> = {};
 
-app.post('/post', (req:any, res:any) => {
-    console.log('Dati ricevuti:', req.body);
+app.post("/post", (req: any, res: any) => {
+  console.log("Dati ricevuti:", req.body);
 
-    if (!req.body) {
-        return res.status(400).json({ error: 'No data received or invalid JSON' });
-    }
+  if (!req.body) {
+    return res.status(400).json({ error: "No data received or invalid JSON" });
+  }
 
-    receivedData = req.body;
+  receivedData = req.body;
 
-    res.json({
-        status: 'success',
-        message: 'Dati ricevuti correttamente!',
-        receivedData: req.body
-    });
+  res.json({
+    status: "success",
+    message: "Dati ricevuti correttamente!",
+    receivedData: req.body,
+  });
 });
 
-// Endpoint GET per recuperare i dati ricevuti
-app.get('/received-data', (req, res) => {
-    res.json({
-        status: 'success',
-        receivedData: receivedData
-    });
+app.get("/received-data", (req, res) => {
+  res.json({
+    status: "success",
+    receivedData: receivedData,
+  });
 });
 
-// Serviamo la cartella 'public' per accedere al file HTML
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, "../public")));
 
-/* ********************** ROUTE PRINCIPALI ********************** */
+/* ********************** API PER GENERARE EAs ********************** */
+
+// Funzioni per numeri casuali
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomCase(min: number, max: number): string {
+  let result = Math.floor(Math.random() * (max - min + 1)) + min;
+  switch (result) {
+    case 1:
+      return "Basso";
+    case 2:
+      return "Medio";
+    case 3:
+      return "Alto";
+    default:
+      return "Unknown";
+  }
+};
+
+const randomFloat = (min: number, max: number): number =>
+  parseFloat((Math.random() * (max - min) + min).toFixed(2));
 
 
-app.get('/api/getEAs', async (req, res) => {
-    const client = new MongoClient(connectionString);
-    await client.connect().catch((err) => res.status(500).send('Internal server error: ' + err));
-    const collection = client.db(DB_NAME).collection('experts'); 
 
-    try {
-        // Recupero i dati dalla collection
-        const data = await collection.find().toArray();
+// Endpoint per generare Expert Advisors casuali
+app.get("/api/generateEAs", async (req:any, res:any) => {
+  const N = parseInt(req.query.N as string) || 5; // Numero di EAs da generare (default 5)
 
-        // Funzione per calcolare il punteggio
-        const calculateScore = (performance) => {
-            const { roi, win_rate, risk_level, stars } = performance;
-            let riskScore = 0;
+  if (N <= 0) {
+    return res
+      .status(400)
+      .json({ error: "Il numero di Expert Advisors deve essere maggiore di 0" });
+  }
 
-            // Converte il risk_level in valore numerico
-            switch (risk_level) {
-                case 'Basso':
-                    riskScore = 1;
-                    break;
-                case 'Medio':
-                    riskScore = 2;
-                    break;
-                case 'Alto':
-                    riskScore = 3;
-                    break;
-                default:
-                    riskScore = 2;  // Default to "Medio" if undefined
-                    break;
-            }
+  const generateEA = () => {
+    return {
+      id: randomInt(1, 10000),
+      name: dictionary.names[randomInt(0, dictionary.names.length - 1)],
+      creator: dictionary.creators[randomInt(0, dictionary.creators.length - 1)],
+      description:
+        dictionary.descriptions[randomInt(0, dictionary.descriptions.length - 1)],
+      performance: {
+        roi: randomFloat(5, 50),
+        risk_level: randomCase(1, 3),
+        win_rate: randomInt(50, 95),
+      },
+      price: randomInt(50, 500),
+      stars: randomInt(1, 5),
+      reviews: randomInt(10, 500),
+      image: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.png`,
+      historical_data: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.json`,
+    };
+  };
+  
 
-            // Calcoliamo una media ponderata dei tre valori
-            return (roi + win_rate + (10 - riskScore) + stars) / 4;
+  const generatedEAs = Array.from({ length: N }, generateEA);
 
-        };
-
-        // Aggiungiamo un campo "score" a ciascun EA per il punteggio calcolato
-        const dataWithScores = data.map(ea => ({
-            ...ea,
-            score: calculateScore(ea.performance)
-        }));
-
-        // Ordiniamo per score in ordine decrescente e prendiamo i primi 5
-        const topEAs = dataWithScores.sort((a, b) => b.score - a.score).slice(0, 4);
-
-        // Restituiamo i 5 migliori EAs
-        res.send(topEAs);
-
-    } catch (err) {
-        res.status(500).send('Internal server error: ' + err);
-
-    } finally {
-        client.close();
-    }
+  res.json({ status: "success", experts: generatedEAs });
 });
-
