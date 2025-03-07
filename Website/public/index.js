@@ -4,26 +4,10 @@ $(document).ready(function () {
     let eaData = []; // Store EA data globally
 
     // Fetch and display the Expert Advisors
-    getEAs();
     fetchData();
     logEAs(); // Chiamata automatica per loggare i dati
 
-    // Function to make a GET request for fetching EAs
-    async function getEAs() {
-        let rq = await inviaRichiesta("GET", "/api/getEAs");
-        if (rq.status == 401) {
-            alert("Errore nella richiesta");
-        } else if (rq.status == 200) {
-            console.log("EA ricevuti");
-            eaData = rq.data; // Store data globally
-            displayEAs(eaData); // Display EAs when data is fetched
 
-            // Event listener for hovering over EA cards
-            $(".ea-card .card").hover(function () {
-                $(this).toggleClass("flipped");
-            });
-        }
-    }
 
     // Function to display EAs
     function displayEAs(eas) {
@@ -113,6 +97,7 @@ $(document).ready(function () {
 
             if (data.status === "success") {
                 console.log("Dati generati degli Expert Advisors:", data.experts);
+                displayEAs(data.experts); // Visualizza gli Expert Advisors
             } else {
                 console.error("Errore nel recupero degli Expert Advisors:", data.message);
             }
