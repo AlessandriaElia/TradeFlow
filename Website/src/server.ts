@@ -284,142 +284,143 @@ app.get("/api/generateEAHtml/:id", async (req: any, res: any) => {
     let totalProfitPercentage = calculateTotalProfitPercentage(ea.performance.data);
     const htmlContent = `
       <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${ea.name}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-        <link rel="stylesheet" href="css/styles.css">
-      </head>
-      <body>
-        <div class="container mt-5">
-          <div class="card">
-            <div class="card-header">
-              <h1>${ea.name}</h1>
-            </div>
-            <div class="card-body">
-              <p><strong>Creator:</strong> ${ea.creator}</p>
-              <p><strong>Description:</strong> ${ea.description}</p>
-              <p><strong>Price:</strong> ${ea.price} USD</p>
-              <p><strong>Stars:</strong> ${'★'.repeat(ea.stars)}${'☆'.repeat(5 - ea.stars)}</p>
-              <p><strong>Reviews:</strong> ${ea.reviews}</p>
-              <img src="img/EAs/${ea.name}.png" alt="${ea.name}" class="img-fluid mb-3">
-              
-              <!-- Statistiche -->
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="stat card text-center">
-                    <div class="card-body">
-                      <h3 class="card-title">Gain</h3>
-                      <p class="card-text">${gain}%</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center">
-                    <div class="card-body">
-                      <h3 class="card-title">Risk Level</h3>
-                      <p class="card-text">${ea.performance.risk_level}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center">
-                    <div class="card-body">
-                      <h3 class="card-title">Win Rate</h3>
-                      <p class="card-text">${winRate}%</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center">
-                    <div class="card-body">
-                      <h3 class="card-title">A. Performance</h3>
-                      <p class="card-text">${averagePerformance.toFixed(2)} USD</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${ea.name}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body style="background-color: #00154B; color: white;">
 
-              <!-- Nuove informazioni -->
-              <div class="row">
-                <div class="col-md-3">
-                  <div class="stat card text-center" style="margin-top:15px;">
-                    <div class="card-body">
-                      <h3 class="card-title">Max Drawdown</h3>
-                      <p class="card-text">${drawdown.toFixed(2)}%</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center" style="margin-top:15px;">
-                    <div class="card-body">
-                      <h3 class="card-title">N. Trades</h3>
-                      <p class="card-text">${numberOfTrades}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center" style="margin-top:15px;">
-                    <div class="card-body">
-                      <h3 class="card-title">Sharpe Ratio</h3>
-                      <p class="card-text">${sharpeRatio}</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="stat card text-center" style="margin-top:15px;">
-                    <div class="card-body">
-                      <h3 class="card-title">Total Profit</h3>
-                      <p class="card-text">${totalProfitPercentage}%</p>
-                    </div>
-                  </div>
-                </div>
+  <div class="container mt-5">
+    <div class="card" style="color:black;">
+      <div class="card-header">
+        <h1 style="color: gold;">${ea.name}</h1>
+      </div>
+      <div class="card-body">
+        <p><strong>Creator:</strong> ${ea.creator}</p>
+        <p><strong>Description:</strong> ${ea.description}</p>
+        <p><strong>Price:</strong> ${ea.price} USD</p>
+        <p><strong>Stars:</strong> ${'★'.repeat(ea.stars)}${'☆'.repeat(5 - ea.stars)}</p>
+        <p><strong>Reviews:</strong> ${ea.reviews}</p>
+        <img src="img/EAs/${ea.name}.png" alt="${ea.name}" class="img-fluid mb-3">
+
+        <!-- Statistiche -->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="stat card text-center" style="background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Gain</h3>
+                <p class="card-text"style="color:white;">${gain}%</p>
               </div>
-              
-              <!-- Performance Chart -->
-              <div class="chart-container mb-3">
-                <canvas id="performanceChart"></canvas>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Risk Level</h3>
+                <p class="card-text"style="color:white;">${ea.performance.risk_level}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Win Rate</h3>
+                <p class="card-text"style="color:white;">${winRate}%</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">A. Performance</h3>
+                <p class="card-text"style="color:white;">${averagePerformance.toFixed(2)} USD</p>
               </div>
             </div>
           </div>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-        <script>
-          async function fetchPerformanceData() {
-            const response = await fetch('/api/generatePerformanceData/${eaId}');
-            const data = await response.json();
-            const ctx = document.getElementById('performanceChart').getContext('2d');
-            new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: data.labels,
-                datasets: [{
-                  label: 'Performance',
-                  data: data.values,
-                  borderColor: 'rgba(75, 192, 192, 1)',
-                  borderWidth: 1
-                }]
-              },
-              options: {
-                scales: {
-                  y: {
-                    beginAtZero: true
-                  }
-                }
-              }
-            });
+        <!-- Nuove informazioni -->
+        <div class="row">
+          <div class="col-md-3">
+            <div class="stat card text-center" style="margin-top:15px; background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Max Drawdown</h3>
+                <p class="card-text"style="color:white;">${drawdown.toFixed(2)}%</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="margin-top:15px; background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">N. Trades</h3>
+                <p class="card-text" style="color:white;">${numberOfTrades}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="margin-top:15px; background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Sharpe Ratio</h3>
+                <p class="card-text"style="color:white;">${sharpeRatio}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="stat card text-center" style="margin-top:15px; background-color: #3A75C4;">
+              <div class="card-body">
+                <h3 class="card-title" style="color: gold;">Total Profit</h3>
+                <p class="card-text"style="color:white;">${totalProfitPercentage}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="chart-container mb-3">
+          <canvas id="performanceChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    async function fetchPerformanceData() {
+      const response = await fetch('/api/generatePerformanceData/${eaId}');
+      const data = await response.json();
+      const ctx = document.getElementById('performanceChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Performance',
+            data: data.values,
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
           }
-          fetchPerformanceData();
-        </script>
-      </body>
-      </html>
-    `;
+        }
+      });
+    }
+    fetchPerformanceData();
+  </script>
+</body>
+</html>
+`;
 
     res.send(htmlContent);
   });

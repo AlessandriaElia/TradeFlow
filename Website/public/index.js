@@ -19,7 +19,7 @@ $(document).ready(function () {
                                 <h5 class="card-title">${ea.name}</h5>
                                 <div class="stars">${stars}</div>
                                 <button class="btn btn-gold mt-auto">${ea.price} USD</button>
-                                <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank">View Details</a>
+                                <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank" style="background-color:gold; color:black">View Details</a>
                             </div>
                         </div>
                         <div class="card-back">
@@ -28,7 +28,7 @@ $(document).ready(function () {
                             <p>${ea.description}</p>
                             <p>- ${ea.creator} -</p>
                             <button class="btn btn-gold mt-auto">${ea.price} USD</button>
-                            <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank">View Details</a>
+                            <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank"style="background-color:gold; color:black">View Details</a>
                         </div>
                     </div>
                 </div>
