@@ -17,6 +17,11 @@
 }
 
 /* Navbar */
+
+.navbar-scrolled {
+  background-color: rgba(0, 0, 0, 0.8)!important;
+  transition: background-color 0.3s!important;
+}
 .navbar {
   position: fixed;
   top: 0;
@@ -26,7 +31,7 @@
   align-items: center;
   gap: 30px;
   z-index: 10;
-  background-color: rgba(0, 0, 0, 0.7); /* Aggiungi uno sfondo semi-trasparente */
+  background-color: rgba(0, 0, 0, 0.7); 
 }
 
 .navbar ul {
