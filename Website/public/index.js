@@ -1,7 +1,6 @@
 "use strict";
 $(document).ready(function () {
     let bestEaList = $("#bestEaList");
-    let eaData = []; 
 
     fetchData();
     logEAs(); 
@@ -37,34 +36,6 @@ $(document).ready(function () {
         });
     }
 
-    $(".filter-btn").click(function () {
-        $(".filter-btn").css("background-color", "gold");
-        $(this).css("background-color", "#ffcc00"); 
-
-        let filter = $(this).data("filter");
-
-        let filteredEAs = eaData;
-        if (filter !== "all") {
-            filteredEAs = eaData.filter(ea => {
-                if (filter === "popular" && ea.stars >= 4) return true;
-                if (filter === "new" && ea.isNew) return true;
-                if (filter === "free" && ea.price === 0) return true;
-                if (filter === "paid" && ea.price > 0) return true;
-                return false;
-            });
-        }
-
-        displayEAs(filteredEAs);
-    });
-
-    $("#search").on("input", function () {
-        let query = $(this).val().toLowerCase();
-        let searchedEAs = eaData.filter(ea => {
-            return ea.name.toLowerCase().includes(query) || ea.description.toLowerCase().includes(query);
-        });
-        displayEAs(searchedEAs); 
-    });
-
     async function fetchData() {
         try {
             const response = await fetch("http://localhost:5000/received-data");
@@ -81,9 +52,9 @@ $(document).ready(function () {
         }
     }
 
-    async function logEAs() {
+    async function logEAs(filter = "all", searchQuery = "") {
         try {
-            const response = await fetch("http://localhost:5000/api/generateEAs?N=5");
+            const response = await fetch(`http://localhost:5000/api/generateEAs?filter=${filter}&search=${searchQuery}`);
             const data = await response.json();
 
             if (data.status === "success") {
@@ -96,4 +67,16 @@ $(document).ready(function () {
             console.error("Errore nella richiesta di generazione EA:", error);
         }
     }
+
+    // Event listeners per i pulsanti di filtro
+    $(".filter-btn").on("click", function() {
+        const filter = $(this).data("filter");
+        logEAs(filter, $("#search").val());
+    });
+
+    // Event listener per l'input di ricerca
+    $("#search").on("input", function() {
+        const searchQuery = $(this).val();
+        logEAs($(".filter-btn.active").data("filter") || "all", searchQuery);
+    });
 });

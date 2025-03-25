@@ -140,7 +140,9 @@ function generatePerformanceData(roi: number, winRate: number): number[] {
 }
 
 app.get("/api/generateEAs", async (req: any, res: any) => {
-  const N = parseInt(req.query.N as string) || 5; 
+  const N = parseInt(req.query.N as string) || 5;
+  const filter = req.query.filter || "all";
+  const search = req.query.search || "";
 
   if (N <= 0) {
     return res
@@ -163,7 +165,7 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
         win_rate: winRate,
         data: generatePerformanceData(roi, winRate)
       },
-      price: randomInt(50, 500),
+      price: randomInt(0, 500),
       stars: randomInt(1, 5),
       reviews: randomInt(10, 500),
       image: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.png`,
@@ -171,7 +173,23 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
     };
   };
 
-  const generatedEAs = Array.from({ length: N }, generateEA);
+  let generatedEAs = Array.from({ length: N }, generateEA);
+
+  // Filtraggio
+  if (filter === "popular") {
+    generatedEAs = generatedEAs.sort((a, b) => b.stars - a.stars);
+  } else if (filter === "new") {
+    generatedEAs = generatedEAs.sort((a, b) => b.id - a.id);
+  } else if (filter === "free") {
+    generatedEAs = generatedEAs.filter(ea => ea.price === 0);
+  } else if (filter === "paid") {
+    generatedEAs = generatedEAs.filter(ea => ea.price > 0);
+  }
+
+  // Ricerca
+  if (search) {
+    generatedEAs = generatedEAs.filter(ea => ea.name.toLowerCase().includes(search.toLowerCase()));
+  }
 
   fs.writeFile("./DB/experts.json", JSON.stringify(generatedEAs, null, 2), (err) => {
     if (err) {
