@@ -1,8 +1,9 @@
 "use strict";
 $(document).ready(function () {
     let bestEaList = $("#bestEaList");
+    let allEAs = []; // Variabile globale per memorizzare gli EA ricevuti
 
-    fetchData();
+    fetchData(); 
     logEAs(); 
 
     function displayEAs(eas) {
@@ -27,7 +28,7 @@ $(document).ready(function () {
                             <p>${ea.description}</p>
                             <p>- ${ea.creator} -</p>
                             <button class="btn btn-gold mt-auto">${ea.price} USD</button>
-                            <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank"style="background-color:gold; color:black">View Details</a>
+                            <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary mt-2" target="_blank" style="background-color:gold; color:black;">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -59,13 +60,20 @@ $(document).ready(function () {
 
             if (data.status === "success") {
                 console.log("Dati generati degli Expert Advisors:", data.experts);
-                displayEAs(data.experts); 
+                allEAs = data.experts; // Memorizziamo i dati una sola volta
+                displayEAs(allEAs); 
             } else {
                 console.error("Errore nel recupero degli Expert Advisors:", data.message);
             }
         } catch (error) {
             console.error("Errore nella richiesta di generazione EA:", error);
         }
+    }
+
+    // Funzione per filtrare i dati già ricevuti
+    function filterEAs(searchQuery) {
+        const filteredEAs = allEAs.filter(ea => ea.name.toLowerCase().includes(searchQuery.toLowerCase()));
+        displayEAs(filteredEAs); // Mostra solo gli EA filtrati
     }
 
     // Event listeners per i pulsanti di filtro
@@ -77,6 +85,6 @@ $(document).ready(function () {
     // Event listener per l'input di ricerca
     $("#search").on("input", function() {
         const searchQuery = $(this).val();
-        logEAs($(".filter-btn.active").data("filter") || "all", searchQuery);
+        filterEAs(searchQuery); // Filtra senza ricaricare i dati
     });
 });

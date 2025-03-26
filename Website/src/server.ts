@@ -138,9 +138,8 @@ function generatePerformanceData(roi: number, winRate: number): number[] {
 
   return data;
 }
-
 app.get("/api/generateEAs", async (req: any, res: any) => {
-  const N = parseInt(req.query.N as string) || 5;
+  const N = parseInt(req.query.N as string) || 20;
   const filter = req.query.filter || "all";
   const search = req.query.search || "";
 
@@ -150,30 +149,55 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
       .json({ error: "Il numero di Expert Advisors deve essere maggiore di 0" });
   }
 
+  // Creiamo delle copie dei dati per evitare di modificarli direttamente
+  let availableNames = [...dictionary.names];
+  let availableCreators = [...dictionary.creators];
+  let availableDescriptions = [...dictionary.descriptions];
+
   const generateEA = () => {
+    if (availableNames.length === 0 || availableCreators.length === 0 || availableDescriptions.length === 0) {
+      return null; // Nessun dato disponibile, interrompi la generazione
+    }
+
     const roi = randomFloat(5, 50);
     const winRate = randomInt(50, 95);
+
+    const nameIndex = randomInt(0, availableNames.length - 1);
+    const creatorIndex = randomInt(0, availableCreators.length - 1);
+    const descriptionIndex = randomInt(0, availableDescriptions.length - 1);
+
+    const name = availableNames.splice(nameIndex, 1)[0]; // Rimuove e ottiene il nome
+    const creator = availableCreators.splice(creatorIndex, 1)[0]; // Rimuove e ottiene il creatore
+    const description = availableDescriptions.splice(descriptionIndex, 1)[0]; // Rimuove e ottiene la descrizione
+
     return {
       id: randomInt(1, 10000),
-      name: dictionary.names[randomInt(0, dictionary.names.length - 1)],
-      creator: dictionary.creators[randomInt(0, dictionary.creators.length - 1)],
-      description:
-        dictionary.descriptions[randomInt(0, dictionary.descriptions.length - 1)],
+      name,
+      creator,
+      description,
       performance: {
         roi: roi,
         risk_level: randomCase(1, 3),
         win_rate: winRate,
-        data: generatePerformanceData(roi, winRate)
+        data: generatePerformanceData(roi, winRate),
       },
       price: randomInt(0, 500),
       stars: randomInt(1, 5),
       reviews: randomInt(10, 500),
-      image: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.png`,
-      historical_data: `${dictionary.names[randomInt(0, dictionary.names.length - 1)]}.json`,
+      image: `${name}.png`, // Assegna direttamente il nome dell'EA come immagine
+      historical_data: `${name}.json`,
     };
   };
 
-  let generatedEAs = Array.from({ length: N }, generateEA);
+  let generatedEAs = [];
+  for (let i = 0; i < N; i++) {
+    const ea = generateEA();
+    if (ea) {
+      generatedEAs.push(ea);
+    } else {
+      break; // Esce se non ci sono più dati disponibili
+    }
+  }
 
   // Filtraggio
   if (filter === "popular") {
@@ -199,6 +223,7 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
     res.json({ status: "success", experts: generatedEAs });
   });
 });
+
 app.get("/api/generateEAHtml/:id", (req: any, res: any) => {
   res.sendFile(path.join(__dirname, "../public/ea.html"));
 });
