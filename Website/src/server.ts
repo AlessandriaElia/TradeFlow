@@ -3,11 +3,13 @@
 import http from "http";
 import fs from "fs";
 import express, { NextFunction, Request, Response } from "express";
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import bodyParser from "body-parser";
 import path from "path";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 /* ********************** MONGO CONFIG ********************* */
 const connectionString = "mongodb://localhost:27017"; 
@@ -15,6 +17,12 @@ const DB_NAME = "ExpertAdvisor";
 
 /* ********************** HTTP SERVER ********************** */
 const port = 5000; 
+const privateKey = fs.readFileSync("keys/private.pem", "utf8");
+const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
+const JWT_SECRET = "supersegreto";
+const EXPERTS_FILE = "./DB/experts.json";
+
+
 let paginaErrore: string; 
 const app = express();
 const server = http.createServer(app);
@@ -75,6 +83,8 @@ app.use("/", cors(corsOptions));
 app.use(cors());
 app.use(bodyParser.json());
 app.use(fileUpload());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/DB", express.static(path.join(__dirname, "../DB")));
 
 let receivedData: Record<string, any> = {};
 
@@ -181,7 +191,7 @@ app.get("/api/generateEAs", async (req: any, res: any) => {
         win_rate: winRate,
         data: generatePerformanceData(roi, winRate),
       },
-      price: randomInt(0, 500),
+      price: randomInt(0, 20),
       stars: randomInt(1, 5),
       reviews: randomInt(10, 500),
       image: `${name}.png`, // Assegna direttamente il nome dell'EA come immagine
@@ -349,4 +359,94 @@ app.get("/api/generatePerformanceData/:id", (req: any, res: any) => {
 
     res.json({ labels, values });
   });
+  // Rotta di registrazione (signup)
+app.post("/api/signup", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username e password sono obbligatori." });
+  }
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(DB_NAME).collection("users");
+
+    // Verifica se l'utente esiste già
+    const existingUser = await collection.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ error: "Utente già registrato." });
+    }
+
+    // Hash della password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Salva l'utente nel database
+    const newUser = { username, password: hashedPassword };
+    await collection.insertOne(newUser);
+
+    res.status(201).json({ message: "Registrazione completata con successo." });
+  } catch (err) {
+    console.error("Errore durante la registrazione:", err);
+    res.status(500).json({ error: "Errore interno del server." });
+  } finally {
+    await client.close();
+  }
+});
+
+// Rotta di login
+app.post("/api/login", async (req: Request, res: Response) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ error: "Username e password sono obbligatori." });
+  }
+
+  const client = new MongoClient(connectionString);
+  try {
+    await client.connect();
+    const collection = client.db(DB_NAME).collection("users");
+
+    // Trova l'utente
+    const user = await collection.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ error: "Credenziali non valide." });
+    }
+
+    // Verifica la password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Credenziali non valide." });
+    }
+
+    // Genera il token JWT
+    const token = jwt.sign({ id: user._id, username: user.username }, privateKey, {
+      algorithm: "RS256",
+      expiresIn: "1h",
+    });
+
+    res.json({ message: "Login effettuato con successo.", token });
+  } catch (err) {
+    console.error("Errore durante il login:", err);
+    res.status(500).json({ error: "Errore interno del server." });
+  } finally {
+    await client.close();
+  }
+});
+function authenticateToken(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Accesso negato. Token mancante." });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
+    if (err) {
+      return res.status(403).json({ error: "Token non valido." });
+    }
+    (req as any).user = user;
+    next();
+  });
+}
 });

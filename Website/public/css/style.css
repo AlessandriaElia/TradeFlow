@@ -130,135 +130,141 @@
 }
 
 /* Sezione Base */
+/* Sezione Base */
 #best-ea {
-
-  background-color:   #00154B;
+  background-color: #00154B;
+  padding: 20px 0;
 }
 
-.ea-card {
-  perspective: 1000px;
+.navbar-scrolled {
+  background-color: rgba(0, 0, 0, 0.8);
+  transition: background-color 0.3s;
 }
 
-.card {
-  width: 100%;
-  height: 320px;
+.hero {
   position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.5s;
+  text-align: center;
+  color: white;
 }
 
-.card:hover {
-  transform: rotateY(180deg);
-}
-
-.card-front,
-.card-back {
+.background-video {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  position: absolute;
-  backface-visibility: hidden;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  padding: 100px 20px;
+}
+
+.hero-logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+/* TABELLA */
+
+/* Contenitore delle card */
+#bestEaList {
+  display: grid; /* Usa CSS Grid */
+  grid-template-columns: repeat(5, 1fr); /* 5 colonne di larghezza uguale */
+  gap: 20px; /* Spaziatura uniforme tra le card */
+  justify-content: center; /* Centra le card orizzontalmente */
+  padding: 20px;
+  border: 1px solid white; /* Bordo bianco */
+  margin-top: -25px;
+}
+
+/* Card */
+.ea-card {
+  width: 100%; /* La larghezza è gestita dal grid */
+  margin: 0; /* Rimuove margini extra */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 15px;
-  border-radius: 10px;
 }
 
-.card-front {
+/* Card */
+.card {
+  width: 100%; /* Occupa tutta la larghezza del contenitore */
+  height: 250px; /* Altezza uniforme */
   background-color: #3A75C4;
   color: gold;
+  border-radius: 10px;
+  border: 2px solid white; /* Bordo bianco attorno alla card */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Disposizione verticale */
+  justify-content: space-between; /* Spaziatura tra gli elementi */
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.card-front img {
-  width: 100%;
-  height: 120px;
-  object-fit: contain;
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-.card-back {
-  background-color: #1e2a47;
+/* Immagine della card */
+.card img {
+  width: 80px; /* Dimensione uniforme */
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%; /* Immagini circolari */
+  background-color: white;
+  padding: 5px;
+  display: block;
+  margin: 10px auto; /* Centra l'immagine orizzontalmente */
+}
+
+/* Corpo della card */
+.card-body {
+  flex: 1; /* Occupa lo spazio disponibile */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Titolo della card */
+.card-title {
+  font-size: 1rem; /* Ridotto */
+  font-weight: bold;
+  text-align: center;
+  margin: 5px 0;
   color: white;
-  transform: rotateY(180deg);
 }
 
+/* Stelle */
 .stars {
   color: gold;
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* Ingrandito */
   margin: 5px 0;
 }
 
-.review-count {
-  font-size: 0.9rem;
-  color: lightgray;
-}
-
-.card-price {
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #fff;
-}
-
-.btn-gold {
-  background-color: gold;
-  color: black;
-  padding: 10px;
+/* Bottone */
+.card-button {
+  background-color: #3A75C4; /* Stesso colore della card */
+  color: white; /* Testo in bianco */ 
+  font-weight: bold; /* Testo in grassetto */
+  padding: 15px 0; /* Altezza del bottone */
+  font-size: 1rem; /* Dimensione del testo */
+  border: none; /* Rimuove i bordi */
+  width: 100%; /* Larghezza completa */
+  text-align: center;
   text-decoration: none;
-  font-weight: bold;
-  border-radius: 5px;
-  display: inline-block;
-  transition: background 0.3s;
+  transition: background-color 0.3s ease;
 }
 
-.btn-gold:hover {
-  background-color: darkgoldenrod;
-}
-
-/* Ridurre la larghezza e l'altezza della card */
-.card {
-  width: 100%;
-  height: 250px; /* Altezza ridotta */
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.5s;
-  overflow: hidden; /* Nasconde la parte dell'immagine che esce dalla card */
-}
-
-/* Ridurre le dimensioni dell'immagine */
-.card-front img {
-  margin-top: 30px;
-  width: 75px;
-  height: 75px; /* Altezza dell'immagine uguale alla card */
-  object-fit: cover; /* Ritaglia l'immagine per coprire l'intera area senza distorsioni */
-}
-
-
-/* Ridurre la dimensione del testo nelle cards */
-.card-title {
-  font-size: 1rem; /* Ridotto da un valore più grande */
-}
-
-.stars {
-  font-size: 1rem; /* Ridotto */
-}
-
-.card-price {
-  font-size: 1rem; /* Ridotto */
-}
-
-.review-count {
-  font-size: 0.8rem; /* Ridotto */
-}
-/* Ridurre la larghezza del contenitore delle carte */
-.ea-card {
-  width: 220px; /* Impostato su una larghezza fissa più piccola */
-  margin: 10px;
-}
-.card .btn-primary {
-  background-color: gold;
-  color: black;
-  padding: 6px 12px; /* Ridotto il padding per il bottone */
-  border-radius: 5px;
-  font-size: 0.9rem; /* Ridotto il font size */
+.card-button:hover {
+  background-color: #2A5CA4; /* Colore più scuro al passaggio del mouse */
 }
