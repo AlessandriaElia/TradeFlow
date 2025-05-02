@@ -5,6 +5,46 @@ $(document).ready(function () {
 
     fetchData();
 
+    // Event listener per i filtri
+    $(".filter-btn").on("click", function () {
+        const filter = $(this).data("filter");
+        applyFilter(filter);
+    });
+
+    // Event listener per la ricerca
+    $("#search").on("input", function () {
+        const searchTerm = $(this).val().toLowerCase();
+        applySearch(searchTerm);
+    });
+
+    // Funzione per applicare i filtri
+    function applyFilter(filter) {
+        let filteredEAs = [];
+        switch (filter) {
+            case "popular":
+                filteredEAs = allEAs.filter(ea => ea.stars >= 4); // EA con stelle >= 4
+                break;
+            case "free":
+                filteredEAs = allEAs.filter(ea => ea.price === 0); // EA gratuiti
+                break;
+            case "paid":
+                filteredEAs = allEAs.filter(ea => ea.price > 0); // EA a pagamento
+                break;
+            case "all":
+            default:
+                filteredEAs = allEAs; // Mostra tutti gli EA
+                break;
+        }
+        displayEAs(filteredEAs);
+    }
+
+    // Funzione per applicare la ricerca
+    function applySearch(searchTerm) {
+        const searchedEAs = allEAs.filter(ea => ea.name.toLowerCase().includes(searchTerm));
+        displayEAs(searchedEAs);
+    }
+
+    // Funzione per visualizzare gli EA
     function displayEAs(eas) {
         bestEaList.empty();
         eas.forEach(ea => {
@@ -13,82 +53,38 @@ $(document).ready(function () {
 <div class="col-md-3 mb-4 ea-card">
     <div class="card">
         <div class="card-front">
-            <img src="img/EAs/${ea.name}.png" class="card-img-top" alt="${ea.name}">
+            <img src="img/EAs/${ea.name.replace(/\s+/g, "_").toLowerCase()}.png" class="card-img-top" alt="${ea.name}">
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">${ea.name}</h5>
                 <div class="stars">${stars}</div>
             </div>
-            <a href="/api/generateEAHtml/${ea.id}" class="btn btn-primary card-button" target="_blank">${ea.price} USD</a>
+            <button class="btn btn-primary card-button" data-id="${ea.id}">${ea.price === 0 ? "Gratis" : ea.price + " USD"}</button>
         </div>
     </div>
 </div>
 `;
             bestEaList.append(card);
         });
+
+        // Aggiungi event listener ai pulsanti
+        $(".card-button").on("click", function () {
+            const eaId = $(this).data("id");
+            window.location.href = `ea.html?id=${eaId}`;
+        });
     }
 
+    // Funzione per recuperare i dati degli EA
     async function fetchData() {
         try {
-            const response = await fetch("http://localhost:5000/api/generateEAs");
-            const data = await response.json();
-
-            if (data.status === "success") {
-                allEAs = data.experts; // Memorizziamo i dati una sola volta
+            const response = await inviaRichiesta("GET", "/api/experts");
+            if (response.status === 200) {
+                allEAs = response.data.experts; // Memorizziamo i dati una sola volta
                 displayEAs(allEAs);
             } else {
-                console.error("Errore nel recupero degli EA:", data.message);
+                console.error("Errore nel recupero degli EA:", response.err);
             }
         } catch (error) {
             console.error("Errore nella richiesta:", error);
         }
     }
-
-    async function applyFilter(filter, searchQuery = "") {
-        try {
-            // Legge il file experts.json
-            const response = await fetch("./DB/experts.json");
-            const data = await response.json();
-    
-            if (data) {
-                let filteredEAs = data;
-    
-                // Applica il filtro
-                if (filter === "popular") {
-                    filteredEAs = filteredEAs.sort((a, b) => b.stars - a.stars);
-                } else if (filter === "new") {
-                    filteredEAs = filteredEAs.sort((a, b) => b.id - a.id);
-                } else if (filter === "free") {
-                    filteredEAs = filteredEAs.filter(ea => ea.price === 0);
-                } else if (filter === "paid") {
-                    filteredEAs = filteredEAs.filter(ea => ea.price > 0);
-                }
-    
-                // Applica la ricerca
-                if (searchQuery) {
-                    filteredEAs = filteredEAs.filter(ea =>
-                        ea.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    );
-                }
-    
-                // Mostra i dati filtrati
-                displayEAs(filteredEAs);
-            } else {
-                console.error("Errore nel caricamento degli EA dal file JSON.");
-            }
-        } catch (error) {
-            console.error("Errore nella lettura del file JSON:", error);
-        }
-    }
-
-    // Event listeners per i pulsanti di filtro
-    $(".filter-btn").on("click", function () {
-        const filter = $(this).data("filter");
-        applyFilter(filter, $("#search").val());
-    });
-
-    // Event listener per l'input di ricerca
-    $("#search").on("input", function () {
-        const searchQuery = $(this).val();
-        applyFilter("all", searchQuery); // Filtra senza ricaricare i dati
-    });
 });

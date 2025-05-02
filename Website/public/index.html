@@ -31,7 +31,7 @@
         <!-- Gruppo sinistro: link principali -->
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="#home">Home</a>
+            <a class="nav-link" href="#">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="#best-ea">Market</a>
@@ -75,7 +75,6 @@
       <h2 class="text-center mb-4" style="color: white;">Il nostro mercato di Expert Advisors</h2>
       <div class="filters mb-4 d-flex align-items-center" style="border: 1px solid white; padding:10px; gap: 10px;">
         <button class="btn filter-btn" data-filter="popular" style="background-color: white; font-weight: bold;">Popolari</button>
-        <button class="btn filter-btn" data-filter="new" style="background-color: white;font-weight: bold;">Nuovo</button>
         <button class="btn filter-btn" data-filter="free" style="background-color: white;font-weight: bold;">Gratuito</button>
         <button class="btn filter-btn" data-filter="paid" style="background-color: white;font-weight: bold;">Pagamento</button>
         <button class="btn filter-btn" data-filter="all" style="background-color: white;font-weight: bold;">Tutti</button>
@@ -86,7 +85,68 @@
       </div>
     </div>
   </section>
+<!-- Sezione Chi Siamo -->
+<section id="about" class="py-5" style="background-color: #f8f9fa; color: #333;">
+  <div class="container">
+    <h2 class="text-center mb-4">Chi Siamo</h2>
+    <p class="text-center">
+      TradeFlow è una piattaforma innovativa dedicata al trading automatizzato. La nostra missione è fornire strumenti avanzati e accessibili per aiutare i trader a massimizzare i loro profitti e minimizzare i rischi. Con un team di esperti nel settore finanziario e tecnologico, ci impegniamo a offrire soluzioni di alta qualità per il trading algoritmico.
+    </p>
+    <div class="row text-center mt-4">
+      <div class="col-md-4">
+        <img src="img/team1.jpg" alt="Team Member 1" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+        <h5>Marco Rossi</h5>
+        <p>CEO & Fondatore</p>
+      </div>
+      <div class="col-md-4">
+        <img src="img/team2.jpg" alt="Team Member 2" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+        <h5>Giulia Bianchi</h5>
+        <p>CTO</p>
+      </div>
+      <div class="col-md-4">
+        <img src="img/team3.jpg" alt="Team Member 3" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
+        <h5>Luca Verdi</h5>
+        <p>Responsabile Marketing</p>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- Sezione Contatti -->
+<section id="contact" class="py-5" style="background-color: #00154B; color: white;">
+  <div class="container">
+    <h2 class="text-center mb-4">Contattaci</h2>
+    <p class="text-center">
+      Hai domande o vuoi saperne di più? Contattaci utilizzando il modulo sottostante o tramite i nostri canali social.
+    </p>
+    <div class="row">
+      <div class="col-md-6">
+        <form>
+          <div class="mb-3">
+            <label for="name" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="name" placeholder="Inserisci il tuo nome">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" placeholder="Inserisci la tua email">
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Messaggio</label>
+            <textarea class="form-control" id="message" rows="4" placeholder="Scrivi il tuo messaggio"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Invia</button>
+        </form>
+      </div>
+      <div class="col-md-6 text-center">
+        <h5>Seguici sui social</h5>
+        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
+        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
+        <a href="#" class="text-white me-3"><i class="fab fa-linkedin fa-2x"></i></a>
+        <a href="#" class="text-white"><i class="fab fa-instagram fa-2x"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
   <script>
     $(window).scroll(function() {
       if ($(this).scrollTop() > 50) {

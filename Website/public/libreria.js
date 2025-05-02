@@ -9,6 +9,9 @@ const _URL = '';
  * @returns
  */
 async function inviaRichiesta(method, url = '', params = {}) {
+  console.log("URL della richiesta:", url); // Aggiungi questo log
+  
+
   method = method.toUpperCase();
   let options = {
     method: method,
@@ -23,14 +26,15 @@ async function inviaRichiesta(method, url = '', params = {}) {
   if (method == 'GET') {
     const queryParams = new URLSearchParams();
     for (let key in params) {
-      let value = params[key];
-      // Notare che i parametri di tipo object vengono serializzati
-      if (value && typeof value === 'object') queryParams.append(key, JSON.stringify(value));
-      else queryParams.append(key, value);
+        let value = params[key];
+        if (value && typeof value === 'object') queryParams.append(key, JSON.stringify(value));
+        else queryParams.append(key, value);
     }
-    url += '?' + queryParams.toString();
+    if (queryParams.toString()) {
+        url += '?' + queryParams.toString();
+    }
     options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-  } else {
+} else {
     if (params instanceof FormData) {
       // In caso di formData occorre OMETTERE il Content-Type !
       // options.headers["Content-Type"]="multipart/form-data;"
