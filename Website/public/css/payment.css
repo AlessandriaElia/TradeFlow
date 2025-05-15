@@ -1,0 +1,51 @@
+/* Inserisci all'inizio del file */
+@font-face {
+  font-family: 'Modernism';
+  src: url("../fonts/Modernism.ttf") format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ...già presente... */
+.login-container h1,
+.signup-container h1,
+.payment-container h1 {
+  font-family: 'Modernism', sans-serif;
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: white;
+}
+.payment-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: rgba(0, 21, 75, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-align: center;
+}
+
+.payment-container h1 {
+  font-family: 'Modernism', sans-serif;
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+.payment-container h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.payment-container p {
+  font-size: 16px;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 20px;
+}

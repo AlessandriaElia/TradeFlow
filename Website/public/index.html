@@ -28,31 +28,36 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- Gruppo sinistro: link principali -->
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#best-ea">Market</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#about">Chi Siamo</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#contact">Contatti</a>
-          </li>
-        </ul>
-        <!-- Gruppo destro: login e sign up -->
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#login">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#signUp">Sign Up</a>
-          </li>
-        </ul>
-      </div>
+  <ul class="navbar-nav">
+    <li class="nav-item">
+      <a class="nav-link" href="#">Home</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#best-ea">Market</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#about">Chi Siamo</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#contact">Contatti</a>
+    </li>
+  </ul>
+  <ul class="navbar-nav ms-auto" id="authArea">
+  <li class="nav-item d-flex align-items-center" id="loginSignupButtons" style="gap: 10px;">
+    <a class="nav-link" href="login.html" style="color: white; font-weight: bold;">Login</a>
+    <a class="nav-link" href="signup.html" style="color: white; font-weight: bold;">Sign Up</a>
+  </li>
+  <li class="nav-item d-none" id="userGreeting">
+    <span class="nav-link">Ciao, <span id="username"></span></span>
+  </li>
+  <li class="nav-item d-none" id="cartLink">
+    <a class="nav-link" href="#" style="color: white; font-weight: bold;" id="cartNavLink">Carrello</a>
+  </li>
+  <li class="nav-item d-none" id="logoutButton">
+    <a class="nav-link" href="#" id="logout" style="color: white; font-weight: bold;">Logout</a>
+  </li>
+</ul>
+</div>
     </div>
   </nav>
   <!-- Hero Section con Video di Background -->

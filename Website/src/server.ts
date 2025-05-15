@@ -122,3 +122,81 @@ app.get("/api/experts/:id", async (req: Request, res: Response) => {
     await client.close();
   }
 });
+app.post("/api/register", async (req: Request, res: Response) => {
+  const client = new MongoClient(connectionString);
+  const { username, email, password, purchasedEAs } = req.body;
+
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: "Tutti i campi sono obbligatori." });
+  }
+
+  try {
+    await client.connect();
+    const collection = client.db(DB_NAME).collection("users");
+
+    const existingUser = await collection.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email già registrata." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = {
+      username,
+      email,
+      password: hashedPassword,
+      purchasedEAs: purchasedEAs || [],
+      createdAt: new Date(),
+    };
+    const result = await collection.insertOne(newUser);
+
+    const token = jwt.sign(
+      { id: result.insertedId, email, username },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({ message: "Utente registrato con successo.", token });
+  } catch (err) {
+    console.error("Errore durante la registrazione:", err);
+    res.status(500).json({ error: "Errore interno del server." });
+  } finally {
+    await client.close();
+  }
+});
+app.post("/api/login", async (req: Request, res: Response) => {
+  const client = new MongoClient(connectionString);
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Tutti i campi sono obbligatori." });
+  }
+
+  try {
+    await client.connect();
+    const collection = client.db(DB_NAME).collection("users");
+
+    const user = await collection.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: "Credenziali non valide." });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Credenziali non valide." });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email, username: user.username },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({ message: "Login avvenuto con successo.", token });
+  } catch (err) {
+    console.error("Errore durante il login:", err);
+    res.status(500).json({ error: "Errore interno del server." });
+  } finally {
+    await client.close();
+  }
+});

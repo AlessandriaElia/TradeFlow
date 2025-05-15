@@ -1,7 +1,72 @@
 "use strict";
+
+// Funzioni di utilità per il carrello per utente
+function getUserCartKey() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return `cart_${payload.email}`;
+    } catch {
+        return null;
+    }
+}
+function getUserCart() {
+    const cartKey = getUserCartKey();
+    if (!cartKey) return [];
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+function setUserCart(cart) {
+    const cartKey = getUserCartKey();
+    if (!cartKey) return;
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
 $(document).ready(function () {
     let bestEaList = $("#bestEaList");
     let allEAs = []; // Variabile globale per memorizzare gli EA ricevuti
+
+    const authArea = $("#authArea");
+    const loginSignupButtons = $("#loginSignupButtons");
+    const userGreeting = $("#userGreeting");
+    const dashboardLink = $("#dashboardLink");
+    const logoutButton = $("#logoutButton");
+    const usernameSpan = $("#username");
+    const cartNavLink = $("#cartNavLink");
+    const cartLink = $("#cartLink");
+
+    // Controlla se l'utente è loggato
+    const token = localStorage.getItem("token");
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const username = payload.username || "Utente";
+            usernameSpan.text(username);
+            loginSignupButtons.addClass("d-none");
+            userGreeting.removeClass("d-none");
+            cartLink.removeClass("d-none");
+            logoutButton.removeClass("d-none");
+        } catch (error) {
+            console.error("Errore nella decodifica del token:", error);
+        }
+    }
+
+    // Gestione del logout
+    $("#logout").on("click", function () {
+        localStorage.removeItem("token");
+        location.reload();
+    });
+
+    // Gestione click sul carrello
+    cartNavLink.on("click", function (e) {
+        e.preventDefault();
+        const cart = getUserCart();
+        if (cart.length === 0) {
+            alert("Il carrello è vuoto!");
+            return;
+        }
+        window.location.href = "payment.html";
+    });
 
     fetchData();
 

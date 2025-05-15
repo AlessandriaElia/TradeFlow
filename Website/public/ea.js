@@ -2,12 +2,87 @@
 console.log("ea.js caricato correttamente");
 console.log("jQuery:", typeof $);
 
+// Funzioni di utilità per il carrello per utente
+function getUserCartKey() {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return `cart_${payload.email}`;
+    } catch {
+        return null;
+    }
+}
+function getUserCart() {
+    const cartKey = getUserCartKey();
+    if (!cartKey) return [];
+    return JSON.parse(localStorage.getItem(cartKey)) || [];
+}
+function setUserCart(cart) {
+    const cartKey = getUserCartKey();
+    if (!cartKey) return;
+    localStorage.setItem(cartKey, JSON.stringify(cart));
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
 
+    const token = localStorage.getItem("token");
+    const loginSignupButtons = $("#loginSignupButtons");
+    const userGreeting = $("#userGreeting");
+    const cartLink = $("#cartLink");
+    const cartNavLink = $("#cartNavLink");
+    const logoutButton = $("#logoutButton");
+    const usernameSpan = $("#username");
+    const addToCartContainer = $("#addToCartContainer");
+    const addToCartButton = $("#addToCartButton");
 
+    // Navbar gestione login/logout/carrello
+    if (token) {
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            const username = payload.username || "Utente";
+            usernameSpan.text(username);
+            loginSignupButtons.addClass("d-none");
+            userGreeting.removeClass("d-none");
+            cartLink.removeClass("d-none");
+            logoutButton.removeClass("d-none");
+        } catch (error) {
+            console.error("Errore nella decodifica del token:", error);
+        }
+    }
+
+    // Logout
+    $("#logout").on("click", function () {
+        localStorage.removeItem("token");
+        location.reload();
+    });
+
+    // Gestione click sul carrello
+    cartNavLink.on("click", function (e) {
+        e.preventDefault();
+        const cart = getUserCart();
+        if (cart.length === 0) {
+            alert("Il carrello è vuoto!");
+            return;
+        }
+        window.location.href = "payment.html";
+    });
+
+    // Mostra/nasconde il link carrello in base al contenuto
+    function updateCartLinkState() {
+        const cart = getUserCart();
+        if (cart.length === 0) {
+            cartNavLink.addClass("disabled").attr("tabindex", "-1").attr("aria-disabled", "true").css("pointer-events", "none").css("opacity", "0.5");
+        } else {
+            cartNavLink.removeClass("disabled").removeAttr("tabindex").removeAttr("aria-disabled").css("pointer-events", "").css("opacity", "");
+        }
+    }
+    updateCartLinkState();
+
+    // Recupera l'id dell'EA dalla query string
     const params = new URLSearchParams(window.location.search);
-const eaId = params.get("id");
-console.log("ID dell'EA:", eaId);
+    const eaId = params.get("id");
+    console.log("ID dell'EA:", eaId);
 
     if (!eaId) {
         alert("ID dell'Expert Advisor non trovato!");
@@ -22,7 +97,7 @@ console.log("ID dell'EA:", eaId);
 
         if (response.status === 200) {
             const ea = response.data.expert;
-        
+
             // Popola i dettagli dell'EA nella pagina
             $("#ea-name").text(ea.name);
             $("#ea-name-header").text(ea.name);
@@ -35,14 +110,32 @@ console.log("ID dell'EA:", eaId);
             $("#ea-gain").text(ea.performance.roi + "%");
             $("#ea-risk-level").text(ea.performance.risk_level);
             $("#ea-win-rate").text(ea.performance.win_rate + "%");
-        
+
             // Calcoli aggiuntivi
             const performanceData = ea.performance.data;
             $("#ea-drawdown").text(calculateMaxDrawdown(performanceData) + "%");
             $("#ea-number-of-trades").text(calculateNumberOfTrades(performanceData));
             $("#ea-sharpe-ratio").text(calculateSharpeRatio(performanceData));
             $("#ea-total-profit").text(calculateTotalProfit(performanceData) + " USD");
-        
+
+            // Mostra il pulsante "Aggiungi al Carrello" solo se loggato
+            if (token) {
+                addToCartContainer.removeClass("d-none");
+                addToCartButton.off("click").on("click", function () {
+                    const cart = getUserCart();
+                    if (cart.some(item => item.id === ea.id)) {
+                        alert("Questo EA è già presente nel carrello!");
+                        return;
+                    }
+                    cart.push(ea);
+                    setUserCart(cart);
+                    alert("EA aggiunto al carrello!");
+                    updateCartLinkState();
+                });
+            } else {
+                addToCartContainer.addClass("d-none");
+            }
+
             // Genera il grafico delle performance con Plotly
             generatePerformanceChart(ea.performance);
         } else {

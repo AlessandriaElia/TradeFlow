@@ -1,0 +1,100 @@
+/* Inserisci all'inizio del file */
+@font-face {
+  font-family: 'Modernism';
+  src: url("../fonts/Modernism.ttf") format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ...già presente... */
+.login-container h1,
+.signup-container h1,
+.payment-container h1 {
+  font-family: 'Modernism', sans-serif;
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: white;
+}
+/* Contenitore principale */
+.signup-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 20px;
+  background-color: rgba(0, 21, 75, 0.9); /* Sfondo simile a index.html */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  color: white;
+  text-align: center;
+}
+
+/* Titolo */
+.signup-container h1 {
+  font-family: 'Modernism', sans-serif;
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+/* Input */
+.signup-container input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid white;
+  border-radius: 5px;
+  background-color: transparent;
+  color: white;
+}
+
+/* Pulsante */
+.signup-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #3A75C4;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.signup-container button:hover {
+  background-color: #2A5CA4;
+}
+
+/* Link */
+.signup-container a {
+  color: #3A75C4;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.signup-container a:hover {
+  text-decoration: underline;
+}
+
+/* Messaggio */
+#message {
+  margin-top: 10px;
+  font-size: 14px;
+}
+/* Logo */
+.logo {
+  display: block;
+  margin: 0 auto 20px;
+}
+
+/* Titolo */
+.login-container h1, .signup-container h1 {
+  font-family: 'Modernism', sans-serif;
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: white;
+}
+
+/* Commento */
+.login-container p, .signup-container p {
+  font-size: 16px;
+  color: white;
+  margin-bottom: 20px;
+}
