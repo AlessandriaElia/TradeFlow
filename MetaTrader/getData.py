@@ -59,6 +59,21 @@ def get_currency_data(currency_name):
     
     return result
 
+def valuta_segnale(data):
+    """
+    Restituisce un segnale operativo:
+    - LONG se vengono tolte più posizioni short che long (short_change < long_change)
+    - SHORT se vengono tolte più posizioni long che short (long_change < short_change)
+    """
+    if data is None:
+        return "DATI NON DISPONIBILI"
+    if abs(data["short_change"]) > abs(data["long_change"]):
+        return f"LONG (tolte più short: {data['short_change']} vs {data['long_change']})"
+    elif abs(data["long_change"]) > abs(data["short_change"]):
+        return f"SHORT (tolte più long: {data['long_change']} vs {data['short_change']})"
+    else:
+        return f"LONG/SHORT PARI (long_change={data['long_change']}, short_change={data['short_change']})"
+
 currencies = [
     "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE",
     "BRITISH POUND - CHICAGO MERCANTILE EXCHANGE",
@@ -93,11 +108,13 @@ print("=" * 50)
 for currency in currencies:
     data = get_currency_data(currency)
     if data:
+        segnale = valuta_segnale(data)
         print(f"Nome: {data['name']}")
         print(f"  - Posizioni long totali: {data['long_positions']}")
         print(f"  - Posizioni short totali: {data['short_positions']}")
         print(f"  - Cambio di posizioni long: {data['long_change']}")
         print(f"  - Cambio di posizioni short: {data['short_change']}")
+        print(f"  - Segnale: {segnale}")
         print("-" * 50)
 
 print("\nElaborazione completata.")
