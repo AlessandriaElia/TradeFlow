@@ -6,95 +6,147 @@
   font-style: normal;
 }
 
-/* ...già presente... */
-.login-container h1,
-.signup-container h1,
-.payment-container h1 {
-  font-family: 'Modernism', sans-serif;
-  font-size: 32px;
-  margin-bottom: 10px;
+body {
+  background-color: #00154B;
+  background-image: linear-gradient(135deg, #00154B 0%, #12284C 50%, #051C3F 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: white;
 }
-/* Contenitore principale */
+
 .login-container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 20px;
-  background-color: rgba(0, 21, 75, 0.9); /* Sfondo simile a index.html */
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  background-color: rgba(10, 30, 85, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   color: white;
-  text-align: center;
 }
 
-/* Titolo */
-.login-container h1 {
+.login-header {
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logo-container {
+  margin-bottom: 15px;
+}
+
+.logo {
+  width: 70px;
+  height: auto;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
+}
+
+.login-title {
   font-family: 'Modernism', sans-serif;
   font-size: 32px;
-  margin-bottom: 20px;
+  color: #FFD700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  margin-top: 15px;
+}
+
+.login-container h2 {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.form-label {
+  color: white;
+  font-weight: 500;
+}
+
+.form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
   color: white;
 }
 
-/* Input */
-.login-container input {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid white;
-  border-radius: 5px;
-  background-color: transparent;
-  color: white;
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
-/* Pulsante */
-.login-container button {
-  width: 100%;
-  padding: 10px;
+.action-buttons {
+  margin-top: 25px;
+}
+
+.btn-complete {
   background-color: #3A75C4;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s;
 }
 
-.login-container button:hover {
-  background-color: #2A5CA4;
+.btn-complete:hover {
+  background-color: #4a85d4;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(58, 117, 196, 0.4);
 }
 
-/* Link */
-.login-container a {
-  color: #3A75C4;
-  font-weight: bold;
-  text-decoration: none;
+.btn-home {
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  padding: 12px;
+  border-radius: 8px;
+  transition: all 0.3s;
 }
 
-.login-container a:hover {
-  text-decoration: underline;
+.btn-home:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: white;
 }
 
-/* Messaggio */
 #message {
-  margin-top: 10px;
-  font-size: 14px;
-}
-/* Logo */
-.logo {
-  display: block;
-  margin: 0 auto 20px;
+  padding: 10px;
+  border-radius: 8px;
 }
 
-/* Titolo */
-.login-container h1, .signup-container h1 {
-  font-family: 'Modernism', sans-serif;
-  font-size: 36px;
-  margin-bottom: 10px;
-  color: white;
+#message.alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  color: #ff6b6b;
+  border: 1px solid rgba(220, 53, 69, 0.3);
 }
 
-/* Commento */
-.login-container p, .signup-container p {
-  font-size: 16px;
-  color: white;
-  margin-bottom: 20px;
+#message.alert-success {
+  background-color: rgba(40, 167, 69, 0.2);
+  color: #75e799;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.links-container {
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 15px;
+}
+
+.text-highlight {
+  color: #FFD700;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.text-highlight:hover {
+  color: #ffeb99;
+  text-decoration: underline;
 }

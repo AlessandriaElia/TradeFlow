@@ -23,6 +23,8 @@ function setUserCart(cart) {
 }
 
 $(document).ready(function () {
+    const CLOUDINARY_BASE_URL = "https://res.cloudinary.com/dmu6njtxz/image/upload/bots/";
+
     let bestEaList = $("#bestEaList");
     let allEAs = []; // Variabile globale per memorizzare gli EA ricevuti
 
@@ -111,14 +113,17 @@ $(document).ready(function () {
 
     // Funzione per visualizzare gli EA
     function displayEAs(eas) {
-        bestEaList.empty();
-        eas.forEach(ea => {
-            const stars = '★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars));
-            const card = `
+    bestEaList.empty();
+    eas.forEach(ea => {
+        const stars = '★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars));
+        // Usa direttamente il campo image come URL completo
+        const imageUrl = ea.image;
+        console.log("URL dell'immagine:", imageUrl);
+        const card = `
 <div class="col-md-3 mb-4 ea-card">
     <div class="card">
         <div class="card-front">
-            <img src="img/EAs/${ea.name.replace(/\s+/g, "_").toLowerCase()}.png" class="card-img-top" alt="${ea.name}">
+            <img src="${imageUrl}" class="card-img-top" alt="${ea.name}">
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">${ea.name}</h5>
                 <div class="stars">${stars}</div>
@@ -128,15 +133,16 @@ $(document).ready(function () {
     </div>
 </div>
 `;
-            bestEaList.append(card);
-        });
+        bestEaList.append(card);
+    });
 
-        // Aggiungi event listener ai pulsanti
-        $(".card-button").on("click", function () {
-            const eaId = $(this).data("id");
-            window.location.href = `ea.html?id=${eaId}`;
-        });
-    }
+    // Aggiungi event listener ai pulsanti
+    $(".card-button").on("click", function () {
+        const eaId = $(this).data("id");
+        window.location.href = `ea.html?id=${eaId}`;
+    });
+}
+
 
     // Funzione per recuperare i dati degli EA
     async function fetchData() {

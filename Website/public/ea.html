@@ -64,17 +64,28 @@
         <h1 id="ea-name-header" style="color: gold;"></h1>
       </div>
       <div class="card-body">
-        <p><strong>Creator:</strong> <span id="ea-creator"></span></p>
-        <p><strong>Description:</strong> <span id="ea-description"></span></p>
-        <p><strong>Price:</strong> <span id="ea-price"></span> USD</p>
-        <p><strong>Stars:</strong> <span id="ea-stars"></span></p>
-        <p><strong>Reviews:</strong> <span id="ea-reviews"></span></p>
-        
-        <img id="ea-image" alt="" class="img-fluid mb-3">
-        <div id="addToCartContainer" class="d-none">
-          <button id="addToCartButton" class="btn btn-primary">Aggiungi al Carrello</button>
+        <!-- Crea un layout a due colonne -->
+        <div class="row">
+          <!-- Colonna di sinistra con le informazioni testuali (8/12 della larghezza) -->
+          <div class="col-md-8">
+            <p><strong>Creator:</strong> <span id="ea-creator"></span></p>
+            <p><strong>Description:</strong> <span id="ea-description"></span></p>
+            <p><strong>Price:</strong> <span id="ea-price"></span> USD</p>
+            <p><strong>Stars:</strong> <span id="ea-stars"></span></p>
+            <p><strong>Reviews:</strong> <span id="ea-reviews"></span></p>
+            
+            <div id="addToCartContainer" class="d-none">
+<button id="addToCartButton" class="btn" style="background-color: #3A75C4; color: white;">Aggiungi al Carrello</button>            </div>
+          </div>
+          
+          <!-- Colonna di destra con l'immagine (4/12 della larghezza) -->
+          <div class="col-md-4 text-center">
+            <img id="ea-image" alt="" class="img-fluid rounded" style="max-width: 200px; max-height: 200px;">
+          </div>
         </div>
+        
         <br><br>
+        <!-- Resto del contenuto (statistiche e grafico) -->
         <div class="row">
           <div class="col-md-3"><div class="stat card text-center" style="background-color: #3A75C4;"><div class="card-body"><h3 class="card-title" style="color: gold;">Gain</h3><p class="card-text" id="ea-gain" style="color:white;"></p></div></div></div>
           <div class="col-md-3"><div class="stat card text-center" style="background-color: #3A75C4;"><div class="card-body"><h3 class="card-title" style="color: gold;">Risk Level</h3><p class="card-text" id="ea-risk-level" style="color:white;"></p></div></div></div>

@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             $("#ea-price").text(ea.price);
             $("#ea-stars").text('★'.repeat(Math.round(ea.stars)) + '☆'.repeat(5 - Math.round(ea.stars)));
             $("#ea-reviews").text(ea.reviews);
-            $("#ea-image").attr("src", `img/EAs/${ea.name.replace(/\s+/g, "_").toLowerCase()}.png`);
+            $("#ea-image").attr("src", ea.image); 
             $("#ea-gain").text(ea.performance.roi + "%");
             $("#ea-risk-level").text(ea.performance.risk_level);
             $("#ea-win-rate").text(ea.performance.win_rate + "%");
