@@ -118,6 +118,7 @@
   font-size: 48px;
   margin: 10px 0;
   opacity: 0;
+  letter-spacing: 4px;
   animation: fadeIn 1.5s ease forwards;
   animation-delay: 0.5s;
 }
@@ -267,4 +268,221 @@
 
 .card-button:hover {
   background-color: #2A5CA4; /* Colore più scuro al passaggio del mouse */
+}
+/* Market Section */
+.market-section {
+  background-color: #00154B;
+  color: white;
+}
+
+.section-header {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-family: 'Modernism', sans-serif;
+  color: #FFD700;
+  font-size: 2.5rem;
+  letter-spacing: 4px;  /* Added letter spacing */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+.filters-container {
+  background-color: rgba(58, 117, 196, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.filters-wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+  background-color: #3A75C4;
+  border-color: #3A75C4;
+  transform: translateY(-2px);
+}
+
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: white;
+}
+
+/* About Section */
+.about-section {
+  background-color: #f8f9fa;
+}
+
+.about-text {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  color: #333;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.team-member {
+  text-align: center;
+}
+
+.member-image-wrapper {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #3A75C4;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.member-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-name {
+  color: #3A75C4;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.member-role {
+  color: #666;
+}
+
+/* Contact Section */
+.contact-section {
+  background-color: #00154B;
+  color: white;
+}
+
+.contact-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.contact-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.contact-form label {
+  color: white;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.contact-form .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.contact-form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.contact-form .btn-complete {
+  background-color: #3A75C4;
+  color: white;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  transition: all 0.3s;
+}
+
+.contact-form .btn-complete:hover {
+  background-color: #4a85d4;
+  transform: translateY(-2px);
+}
+
+.social-links {
+  text-align: center;
+  padding: 2rem;
+  color: white;
+}
+
+.social-links h5 {
+  color: white;
+  font-family: 'Modernism', sans-serif;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.social-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: white;
+  transition: all 0.3s;
+}
+
+social-icon:hover {
+  background-color: #3A75C4;
+  transform: translateY(-3px);
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .contact-wrapper {
+    grid-template-columns: 1fr;
+  }
+  
+  .filters-wrapper {
+    flex-wrap: wrap;
+  }
+  
+  .filter-btn {
+    width: calc(50% - 0.5rem);
+  }
 }

@@ -24,6 +24,33 @@ function setUserCart(cart) {
     localStorage.setItem(cartKey, JSON.stringify(cart));
 }
 
+// Update the checkIfAlreadyPurchased function
+async function checkIfAlreadyPurchased(eaId) {
+    const token = localStorage.getItem("token");
+    if (!token) return false;
+    
+    try {
+        const response = await fetch(`/api/payments/check/${eaId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to check purchase status');
+        }
+
+        const data = await response.json();
+        console.log("Purchase check response:", data);
+        return data.purchased;
+    } catch (error) {
+        console.error("Errore nel controllo acquisto:", error);
+        return false;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
 
     const token = localStorage.getItem("token");
@@ -118,20 +145,43 @@ document.addEventListener("DOMContentLoaded", async function () {
             $("#ea-sharpe-ratio").text(calculateSharpeRatio(performanceData));
             $("#ea-total-profit").text(calculateTotalProfit(performanceData) + " USD");
 
-            // Mostra il pulsante "Aggiungi al Carrello" solo se loggato
+            // Modifica la parte del codice che gestisce il pulsante di acquisto
             if (token) {
+                const isPurchased = await checkIfAlreadyPurchased(ea.id);
                 addToCartContainer.removeClass("d-none");
-                addToCartButton.off("click").on("click", function () {
-                    const cart = getUserCart();
-                    if (cart.some(item => item.id === ea.id)) {
-                        alert("Questo EA è già presente nel carrello!");
-                        return;
-                    }
-                    cart.push(ea);
-                    setUserCart(cart);
-                    alert("EA aggiunto al carrello!");
-                    updateCartLinkState();
-                });
+                
+                if (isPurchased) {
+                    // Se già acquistato, mostra i pulsanti appropriati
+                    addToCartContainer.html(`
+                        <button class="btn btn-secondary" disabled>
+                            <i class="fas fa-check me-2"></i>Già Acquistato
+                        </button>
+                        <a href="dashboard.html" class="btn" style="background-color: #3A75C4; color: white; margin-left: 10px;">
+                            <i class="fas fa-chart-line me-2"></i>Visualizza Performance
+                        </a>
+                    `);
+                } else {
+                    // Se non acquistato, mostra il pulsante "Aggiungi al Carrello"
+                    addToCartButton.off("click").on("click", async function() {
+                        // Check again before adding to cart (double check)
+                        const currentlyPurchased = await checkIfAlreadyPurchased(ea.id);
+                        if (currentlyPurchased) {
+                            alert("Hai già acquistato questo Expert Advisor!");
+                            location.reload(); // Reload to show correct buttons
+                            return;
+                        }
+
+                        const cart = getUserCart();
+                        if (cart.some(item => item.id === ea.id)) {
+                            alert("Questo EA è già presente nel carrello!");
+                            return;
+                        }
+                        cart.push(ea);
+                        setUserCart(cart);
+                        alert("EA aggiunto al carrello!");
+                        updateCartLinkState();
+                    });
+                }
             } else {
                 addToCartContainer.addClass("d-none");
             }

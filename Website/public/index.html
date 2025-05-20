@@ -50,6 +50,9 @@
   <li class="nav-item d-none" id="userGreeting">
     <span class="nav-link">Ciao, <span id="username"></span></span>
   </li>
+  <li class="nav-item d-none" id="dashboardLink">
+    <a class="nav-link" href="dashboard.html" style="color: white; font-weight: bold;">Dashboard</a>
+  </li>
   <li class="nav-item d-none" id="cartLink">
     <a class="nav-link" href="#" style="color: white; font-weight: bold;" id="cartNavLink">Carrello</a>
   </li>
@@ -75,79 +78,124 @@
   </header>
 
   <!-- Sezione Base -->
-  <section id="best-ea" class="py-5">
-    <div class="container">
-      <h2 class="text-center mb-4" style="color: white;">Il nostro mercato di Expert Advisors</h2>
-      <div class="filters mb-4 d-flex align-items-center" style="border: 1px solid white; padding:10px; gap: 10px;">
-        <button class="btn filter-btn" data-filter="popular" style="background-color: white; font-weight: bold;">Popolari</button>
-        <button class="btn filter-btn" data-filter="free" style="background-color: white;font-weight: bold;">Gratuito</button>
-        <button class="btn filter-btn" data-filter="paid" style="background-color: white;font-weight: bold;">Pagamento</button>
-        <button class="btn filter-btn" data-filter="all" style="background-color: white;font-weight: bold;">Tutti</button>
-        <input type="text" class="form-control ms-2" id="search" placeholder="Cerca EA...">
+<section id="best-ea" class="market-section py-5">
+  <div class="container">
+    <div class="section-header text-center">
+      <i class="fas fa-robot fa-2x mb-3" style="color: #FFD700;"></i>
+      <h2 class="section-title mb-4" style="color: #FFFFFF">Il nostro mercato</h2>
+    </div>
+    
+    <div class="filters-container">
+      <div class="filters-wrapper">
+        <button class="filter-btn active" data-filter="popular">
+          <i class="fas fa-star me-2"></i>Popolari
+        </button>
+        <button class="filter-btn" data-filter="free">
+          <i class="fas fa-gift me-2"></i>Gratuito
+        </button>
+        <button class="filter-btn" data-filter="paid">
+          <i class="fas fa-shopping-cart me-2"></i>Pagamento
+        </button>
+        <button class="filter-btn" data-filter="all">
+          <i class="fas fa-th-list me-2"></i>Tutti
+        </button>
       </div>
-
-      <div class="row justify-content-center" id="bestEaList" style="border: 1px solid white; padding-top: 25px; margin-top: -25px;">
+      <div class="search-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" id="search" placeholder="Cerca EA...">
       </div>
     </div>
-  </section>
+
+    <div class="ea-grid" id="bestEaList">
+      <!-- Content will be populated by JavaScript -->
+    </div>
+  </div>
+</section>
+
 <!-- Sezione Chi Siamo -->
-<section id="about" class="py-5" style="background-color: #f8f9fa; color: #333;">
+<section id="about" class="about-section py-5">
   <div class="container">
-    <h2 class="text-center mb-4">Chi Siamo</h2>
-    <p class="text-center">
-      TradeFlow è una piattaforma innovativa dedicata al trading automatizzato. La nostra missione è fornire strumenti avanzati e accessibili per aiutare i trader a massimizzare i loro profitti e minimizzare i rischi. Con un team di esperti nel settore finanziario e tecnologico, ci impegniamo a offrire soluzioni di alta qualità per il trading algoritmico.
-    </p>
-    <div class="row text-center mt-4">
-      <div class="col-md-4">
-        <img src="img/team1.jpg" alt="Team Member 1" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
-        <h5>Marco Rossi</h5>
-        <p>CEO & Fondatore</p>
-      </div>
-      <div class="col-md-4">
-        <img src="img/team2.jpg" alt="Team Member 2" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
-        <h5>Giulia Bianchi</h5>
-        <p>CTO</p>
-      </div>
-      <div class="col-md-4">
-        <img src="img/team3.jpg" alt="Team Member 3" class="rounded-circle mb-3" style="width: 150px; height: 150px;">
-        <h5>Luca Verdi</h5>
-        <p>Responsabile Marketing</p>
+    <div class="section-header text-center">
+      <i class="fas fa-users fa-2x mb-3" style="color: #3A75C4;"></i>
+      <h2 class="section-title mb-4"style="color: #000000">Chi Siamo</h2>
+    </div>
+    
+    <div class="about-content">
+      <p class="text-center about-text">
+        <i class="fas fa-quote-left me-2"></i>
+        TradeFlow è una piattaforma innovativa dedicata al trading automatizzato. La nostra missione è fornire strumenti avanzati e accessibili per aiutare i trader a massimizzare i loro profitti e minimizzare i rischi.
+        <i class="fas fa-quote-right ms-2"></i>
+      </p>
+      
+      <div class="team-grid">
+        <div class="team-member">
+          <div class="member-image-wrapper">
+            <img src="img/team1.jpg" alt="Marco Rossi">
+          </div>
+          <h5 class="member-name">Marco Rossi</h5>
+          <p class="member-role"><i class="fas fa-briefcase me-2"></i>CEO & Fondatore</p>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-image-wrapper">
+            <img src="img/team2.jpg" alt="Giulia Bianchi">
+          </div>
+          <h5 class="member-name">Giulia Bianchi</h5>
+          <p class="member-role"><i class="fas fa-code me-2"></i>CTO</p>
+        </div>
+        
+        <div class="team-member">
+          <div class="member-image-wrapper">
+            <img src="img/team3.jpg" alt="Luca Verdi">
+          </div>
+          <h5 class="member-name">Luca Verdi</h5>
+          <p class="member-role"><i class="fas fa-chart-line me-2"></i>Responsabile Marketing</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Sezione Contatti -->
-<section id="contact" class="py-5" style="background-color: #00154B; color: white;">
+<section id="contact" class="contact-section py-5">
   <div class="container">
-    <h2 class="text-center mb-4">Contattaci</h2>
-    <p class="text-center">
-      Hai domande o vuoi saperne di più? Contattaci utilizzando il modulo sottostante o tramite i nostri canali social.
-    </p>
-    <div class="row">
-      <div class="col-md-6">
+    <div class="section-header text-center">
+      <i class="fas fa-envelope fa-2x mb-3" style="color: #FFD700;"></i>
+      <h2 class="section-title mb-4">Contattaci</h2>
+    </div>
+    
+    <div class="contact-wrapper">
+      <div class="contact-form">
         <form>
-          <div class="mb-3">
-            <label for="name" class="form-label">Nome</label>
-            <input type="text" class="form-control" id="name" placeholder="Inserisci il tuo nome">
+          <div class="form-group">
+            <label for="name"><i class="fas fa-user me-2"></i>Nome</label>
+            <input type="text" id="name" class="form-control" placeholder="Inserisci il tuo nome">
           </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" placeholder="Inserisci la tua email">
+          
+          <div class="form-group">
+            <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+            <input type="email" id="email" class="form-control" placeholder="Inserisci la tua email">
           </div>
-          <div class="mb-3">
-            <label for="message" class="form-label">Messaggio</label>
-            <textarea class="form-control" id="message" rows="4" placeholder="Scrivi il tuo messaggio"></textarea>
+          
+          <div class="form-group">
+            <label for="message"><i class="fas fa-comment me-2"></i>Messaggio</label>
+            <textarea id="message" class="form-control" rows="4" placeholder="Scrivi il tuo messaggio"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary">Invia</button>
+          
+          <button type="submit" class="btn btn-complete w-100">
+            <i class="fas fa-paper-plane me-2"></i>Invia Messaggio
+          </button>
         </form>
       </div>
-      <div class="col-md-6 text-center">
-        <h5>Seguici sui social</h5>
-        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-2x"></i></a>
-        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-2x"></i></a>
-        <a href="#" class="text-white me-3"><i class="fab fa-linkedin fa-2x"></i></a>
-        <a href="#" class="text-white"><i class="fab fa-instagram fa-2x"></i></a>
+      
+      <div class="social-links">
+        <h5><i class="fas fa-share-alt me-2"></i>Seguici sui social</h5>
+        <div class="social-icons">
+          <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+        </div>
       </div>
     </div>
   </div>

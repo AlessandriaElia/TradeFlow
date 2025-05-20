@@ -1,0 +1,140 @@
+.dashboard-container {
+    padding-top: 100px;
+    background-color: #00154B;
+    min-height: 100vh;
+}
+
+.dashboard-section {
+    padding: 3rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-section:last-child {
+    border-bottom: none;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-family: 'Modernism', sans-serif;
+    color: #FFD700;
+    font-size: 2.5rem;
+    letter-spacing: 4px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Profile Section */
+.profile-content {
+    background-color: rgba(58, 117, 196, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.profile-info {
+    margin-bottom: 2rem;
+}
+
+.info-item {
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.info-item label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.info-item p {
+    margin: 0;
+    padding: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* EA Grids */
+.ea-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+/* Modals */
+.modal-content {
+    background-color: #00154B;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: #FFD700;
+    font-family: 'Modernism', sans-serif;
+    letter-spacing: 2px;
+}
+
+.btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.payment-methods-list {
+    margin-bottom: 1rem;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+
+/* Form Controls */
+.form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.5);
+    color: white;
+    box-shadow: none;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Buttons */
+.btn-complete {
+    background-color: #3A75C4;
+    color: white;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.3s;
+}
+
+.btn-complete:hover {
+    background-color: #4a85d4;
+    transform: translateY(-2px);
+    color: white;
+}

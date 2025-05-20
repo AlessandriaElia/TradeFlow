@@ -79,6 +79,36 @@ app.use("/DB", express.static(path.join(__dirname, "../DB")));
 
 app.use(express.static(path.join(__dirname, "../public")));
 
+// Add after imports
+app.use(express.json());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Add this middleware after your other middleware declarations
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (token) {
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
+            next();
+        } catch (err) {
+            if (err instanceof jwt.TokenExpiredError) {
+                return res.status(401).json({ 
+                    error: "Token scaduto",
+                    code: "TOKEN_EXPIRED"
+                });
+            }
+            return res.status(401).json({ error: "Token non valido" });
+        }
+    } else {
+        next();
+    }
+});
+
 /* ********************** API PER GLI EXPERT ADVISOR ********************** */
 
 // Rotta per ottenere tutti gli Expert Advisor dal database
@@ -189,7 +219,7 @@ app.post("/api/login", async (req: Request, res: Response) => {
     const token = jwt.sign(
       { id: user._id, email: user.email, username: user.username },
       JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" } // Increased from 1h to 24h
     );
 
     res.status(200).json({ message: "Login avvenuto con successo.", token });
@@ -199,4 +229,169 @@ app.post("/api/login", async (req: Request, res: Response) => {
   } finally {
     await client.close();
   }
+});
+/* ********************** API PER I PAGAMENTI ********************** */
+
+// Endpoint per verificare se un EA è già stato acquistato
+app.get("/api/payments/check/:eaId", async (req: Request, res: Response) => {
+  const client = new MongoClient(connectionString);
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+      return res.status(401).json({ error: "Token non fornito" });
+  }
+
+  try {
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+      await client.connect();
+      const collection = client.db(DB_NAME).collection("payments");
+
+      const payment = await collection.findOne({
+          userId: new ObjectId(decoded.id),
+          eaId: parseInt(req.params.eaId),
+          status: "completed"
+      });
+
+      res.json({ purchased: !!payment });
+  } catch (err) {
+      console.error("Errore nella verifica dell'acquisto:", err);
+      res.status(500).json({ error: "Errore interno del server" });
+  } finally {
+      await client.close();
+  }
+});
+
+// Endpoint per creare un nuovo acquisto
+app.post("/api/payments/create", async (req: Request, res: Response) => {
+  const client = new MongoClient(connectionString);
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+      return res.status(401).json({ error: "Token non fornito" });
+  }
+
+  try {
+      const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+      await client.connect();
+      const paymentsCollection = client.db(DB_NAME).collection("payments");
+
+      const { items } = req.body;
+
+      // Verifica che tutti gli items siano validi
+      if (!Array.isArray(items) || items.length === 0) {
+          return res.status(400).json({ error: "Carrello non valido" });
+      }
+
+      // Crea i documenti di pagamento
+      const paymentDocs = items.map(item => ({
+          userId: new ObjectId(decoded.id),
+          eaId: item.eaId,
+          price: item.price,
+          purchaseDate: new Date(),
+          status: "completed"
+      }));
+
+      // Inserisci tutti i pagamenti
+      const result = await paymentsCollection.insertMany(paymentDocs);
+
+      if (result.insertedCount === items.length) {
+          res.json({ 
+              message: "Pagamento completato con successo",
+              payments: result.insertedIds
+          });
+      } else {
+          // Se qualcosa è andato storto, elimina i pagamenti inseriti
+          await paymentsCollection.deleteMany({
+              _id: { $in: Object.values(result.insertedIds) }
+          });
+          throw new Error("Errore nell'inserimento dei pagamenti");
+      }
+  } catch (err) {
+      console.error("Errore nella creazione del pagamento:", err);
+      res.status(500).json({ error: "Errore interno del server" });
+  } finally {
+      await client.close();
+  }
+});
+
+// Endpoint per ottenere gli EA acquistati dall'utente
+app.get("/api/payments/purchased", async (req: Request, res: Response) => {
+    const client = new MongoClient(connectionString);
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "Token non fornito" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+        await client.connect();
+        const db = client.db(DB_NAME);
+
+        // First get all purchases for the user
+        const payments = await db.collection("payments")
+            .find({
+                userId: new ObjectId(decoded.id),
+                status: "completed"
+            })
+            .toArray();
+
+        console.log("Found payments:", payments);
+
+        if (payments.length === 0) {
+            return res.json([]);
+        }
+
+        // Get the EA IDs from the payments
+        const eaIds = payments.map(p => p.eaId);
+        console.log("EA IDs to fetch:", eaIds);
+
+        // Then fetch the corresponding EAs - Note the collection name is case sensitive
+        const eas = await db.collection("expertAdvisors")
+            .find({
+                id: { $in: eaIds }
+            })
+            .toArray();
+
+        console.log("Found EAs:", eas);
+        res.json(eas);
+
+    } catch (err) {
+        console.error("Errore nel recupero degli EA acquistati:", err);
+        res.status(500).json({ error: "Errore interno del server" });
+    } finally {
+        await client.close();
+    }
+});
+
+// Endpoint per ottenere gli EA pubblicati dall'utente
+app.get("/api/experts/published", async (req: Request, res: Response) => {
+    const client = new MongoClient(connectionString);
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "Token non fornito" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string; username: string };
+        await client.connect();
+        const db = client.db(DB_NAME);
+
+        // Use the correct collection name case
+        const experts = await db.collection("expertAdvisors")
+            .find({
+                creator: decoded.username // Match by username instead of ID
+            })
+            .toArray();
+
+        console.log(`Found ${experts.length} published EAs for user ${decoded.username}`);
+        res.json(experts);
+
+    } catch (err) {
+        console.error("Errore nel recupero degli EA pubblicati:", err);
+        res.status(500).json({ error: "Errore interno del server" });
+    } finally {
+        await client.close();
+    }
 });
