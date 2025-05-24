@@ -3,6 +3,7 @@
 import http from "http";
 import fs from "fs";
 import express, { NextFunction, Request, Response } from "express";
+import { MongoClient, ObjectId } from "mongodb";
 
 // Extend Express Request type
 declare global {
@@ -12,8 +13,6 @@ declare global {
         }
     }
 }
-import { config } from './config';
-import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors";
 import fileUpload from "express-fileupload";
 import bodyParser from "body-parser";
