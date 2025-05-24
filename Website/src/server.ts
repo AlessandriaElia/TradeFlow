@@ -3,6 +3,15 @@
 import http from "http";
 import fs from "fs";
 import express, { NextFunction, Request, Response } from "express";
+
+// Extend Request type to include user property
+declare global {
+    namespace Express {
+        interface Request {
+            user?: any;
+        }
+    }
+}
 import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors";
 import fileUpload from "express-fileupload";
@@ -11,6 +20,9 @@ import path from "path";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import Stripe from 'stripe';
+const stripe = new Stripe('sk_test_51RSFuTQo9KXRXzPRpGfXYINSV2dApNzwBOz5BBHoduOW0oLBCrUKYk4E1CKd3h2SmtFMmoTmbKW5D0aWHOPgFdCB00c23oWzNc');
+
 
 // Carica le variabili di ambiente dal file .env
 dotenv.config();
@@ -26,6 +38,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 let paginaErrore: string;
 const app = express();
 const server = http.createServer(app);
+
 
 server.listen(port, () => {
   init();
@@ -328,25 +341,20 @@ app.get("/api/payments/purchased", async (req: Request, res: Response) => {
         await client.connect();
         const db = client.db(DB_NAME);
 
-        // First get all purchases for the user
         const payments = await db.collection("payments")
             .find({
                 userId: new ObjectId(decoded.id),
-                status: "completed"
+                status: "completed",
+                eaId: { $type: "number" } // Only get payments with valid eaId
             })
             .toArray();
-
-        console.log("Found payments:", payments);
 
         if (payments.length === 0) {
             return res.json([]);
         }
 
-        // Get the EA IDs from the payments
-        const eaIds = payments.map(p => p.eaId);
-        console.log("EA IDs to fetch:", eaIds);
-
-        // Then fetch the corresponding EAs - Note the collection name is case sensitive
+        const eaIds = payments.map(p => p.eaId).filter(id => !isNaN(id));
+        
         const eas = await db.collection("expertAdvisors")
             .find({
                 id: { $in: eaIds }
@@ -391,6 +399,163 @@ app.get("/api/experts/published", async (req: Request, res: Response) => {
     } catch (err) {
         console.error("Errore nel recupero degli EA pubblicati:", err);
         res.status(500).json({ error: "Errore interno del server" });
+    } finally {
+        await client.close();
+    }
+});
+app.post("/api/users/change-password", async (req: Request, res: Response) => {
+    const client = new MongoClient(connectionString);
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        return res.status(401).json({ error: "Token non fornito" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: "Tutti i campi sono obbligatori" });
+        }
+
+        await client.connect();
+        const collection = client.db(DB_NAME).collection("users");
+
+        // Get user
+        const user = await collection.findOne({ _id: new ObjectId(decoded.id) });
+        if (!user) {
+            return res.status(404).json({ error: "Utente non trovato" });
+        }
+
+        // Verify current password
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: "Password attuale non corretta" });
+        }
+
+        // Hash new password
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password
+        await collection.updateOne(
+            { _id: new ObjectId(decoded.id) },
+            { $set: { password: hashedNewPassword } }
+        );
+
+        res.json({ message: "Password aggiornata con successo" });
+    } catch (err) {
+        console.error("Errore nel cambio password:", err);
+        res.status(500).json({ error: "Errore interno del server" });
+    } finally {
+        await client.close();
+    }
+});
+
+// Create payment intent endpoint
+app.post("/api/payment/create-intent", async (req: Request, res: Response) => {
+    const client = new MongoClient(connectionString);
+    const token = req.headers.authorization?.split(" ")[1];
+    
+    if (!token) {
+        return res.status(401).json({ error: "Token non fornito" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+        const { items } = req.body;
+        
+        // Store cart items in a temporary collection
+        await client.connect();
+        const tempCartCollection = client.db(DB_NAME).collection("tempCart");
+        
+        // Save cart items with session reference
+        const tempSessionId = new ObjectId().toString();
+        await tempCartCollection.insertOne({
+            sessionId: tempSessionId,
+            userId: decoded.id,
+            items: items,
+            createdAt: new Date()
+        });
+
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: items.map((item: any) => ({
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: item.name,
+                    },
+                    unit_amount: Math.round(item.price * 100),
+                },
+                quantity: 1,
+            })),
+            metadata: {
+                tempSessionId: tempSessionId,
+                userId: decoded.id
+            },
+            mode: 'payment',
+            success_url: `http://localhost:3000/api/payments/confirm?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: 'http://localhost:3000/payment.html'
+        });
+
+        res.json({ id: session.id });
+    } catch (err) {
+        console.error("Errore nella creazione del payment intent:", err);
+        res.status(500).json({ error: "Errore interno del server" });
+    } finally {
+        await client.close();
+    }
+});
+
+// Update the confirm endpoint
+app.get("/api/payments/confirm", async (req: Request, res: Response) => {
+    const client = new MongoClient(connectionString);
+    const sessionId = req.query.session_id as string;
+
+    try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        
+        if (session.payment_status === 'paid') {
+            await client.connect();
+            const db = client.db(DB_NAME);
+            const paymentsCollection = db.collection("payments");
+            const tempCartCollection = db.collection("tempCart");
+
+            // Retrieve the saved cart items
+            const tempCart = await tempCartCollection.findOne({
+                sessionId: session.metadata?.tempSessionId
+            });
+
+            if (!tempCart) {
+                throw new Error('Cart data not found');
+            }
+
+            // Create separate payment records for each EA
+            const paymentDocs = tempCart.items.map((item: any) => ({
+                userId: new ObjectId(session.metadata?.userId),
+                eaId: parseInt(item.id),
+                price: item.price,
+                purchaseDate: new Date(),
+                status: "completed",
+                stripeSessionId: session.id,
+                itemName: item.name
+            }));
+
+            await paymentsCollection.insertMany(paymentDocs);
+            
+            // Clean up temp cart
+            await tempCartCollection.deleteOne({
+                sessionId: session.metadata?.tempSessionId
+            });
+
+            res.redirect('/dashboard.html?payment=success');
+        } else {
+            res.redirect('/payment.html?error=payment_failed');
+        }
+    } catch (err) {
+        console.error("Errore nella conferma del pagamento:", err);
+        res.redirect('/payment.html?error=payment_failed');
     } finally {
         await client.close();
     }

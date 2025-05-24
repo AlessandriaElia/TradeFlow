@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Initialize Stripe with your public key
+    const stripe = Stripe('pk_test_51RSFuTQo9KXRXzPRXz9F7wxDQpOPbWKgODwWXY8C46bGph0UBTpwSSuRTjnWvzyiMMfBcFYDvxEjRwYpmRhW1yxn00ECjKHrOk');
     const cartItems = document.getElementById("cartItems");
     const cart = getUserCart();
     let totalPrice = 0;
@@ -57,31 +59,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const headers = {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            };
-
-            const response = await fetch('/api/payments/create', {
+            const response = await fetch('/api/payment/create-intent', {
                 method: 'POST',
-                headers: headers,
-                body: JSON.stringify({
-                    items: cart.map(item => ({
-                        eaId: item.id,
-                        price: item.price
-                    }))
-                })
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ items: cart })
             });
 
-            const data = await response.json();
+            const session = await response.json();
 
-            if (response.ok) {
-                alert("Pagamento completato con successo!");
-                setUserCart([]); // Svuota il carrello
-                window.location.href = "dashboard.html";
-            } else {
-                throw new Error(data.message || "Errore durante il pagamento");
+            if (!response.ok) {
+                throw new Error(session.error || 'Errore durante il pagamento');
             }
+
+            // Redirect to Stripe Checkout
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id
+            });
+
+            if (result.error) {
+                throw new Error(result.error.message);
+            }
+
         } catch (error) {
             console.error("Errore durante il pagamento:", error);
             alert(error.message || "Si è verificato un errore durante il pagamento");

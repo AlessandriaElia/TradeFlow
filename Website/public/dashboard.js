@@ -1,4 +1,13 @@
 $(document).ready(async function() {
+    // Add this at the beginning of your ready function
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('payment') === 'success') {
+        alert('Pagamento completato con successo!');
+        setUserCart([]); // Clear the cart
+        // Remove the query parameter
+        window.history.replaceState({}, document.title, "/dashboard.html");
+    }
+
     // Check if user is logged in
     const token = localStorage.getItem("token");
     if (!token) {
@@ -36,6 +45,63 @@ $(document).ready(async function() {
         }
         throw error;
     }
+
+    $("#changePasswordForm").on("submit", async function(e) {
+    e.preventDefault();
+    
+    const currentPassword = $("#currentPassword").val();
+    const newPassword = $("#newPassword").val();
+    const confirmPassword = $("#confirmPassword").val();
+    
+    // Validate passwords
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        alert("Tutti i campi sono obbligatori");
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        alert("Le nuove password non coincidono");
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        alert("La nuova password deve essere di almeno 6 caratteri");
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const response = await fetch('/api/users/change-password', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Errore nel cambio password');
+        }
+
+        alert("Password aggiornata con successo");
+        $("#changePasswordModal").modal('hide');
+        $("#changePasswordForm")[0].reset();
+    } catch (error) {
+        console.error("Errore:", error);
+        alert(error.message);
+    }
+});
 
     // Fetch purchased EAs from server
     async function fetchPurchasedEAs() {
@@ -194,12 +260,7 @@ $(document).ready(async function() {
         displayPublishedEAs()
     ]);
 
-    // Form submissions
-    $("#changePasswordForm").on("submit", function(e) {
-        e.preventDefault();
-        // Implement password change logic here
-        alert("Funzionalità in sviluppo");
-    });
+   
 
     $("#uploadEAForm").on("submit", function(e) {
         e.preventDefault();

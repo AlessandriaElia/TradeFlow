@@ -126,18 +126,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Update the Change Password Modal form -->
                     <form id="changePasswordForm">
                         <div class="mb-3">
                             <label>Password Attuale</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" id="currentPassword" required>
                         </div>
                         <div class="mb-3">
                             <label>Nuova Password</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" id="newPassword" required>
                         </div>
                         <div class="mb-3">
                             <label>Conferma Nuova Password</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" class="form-control" id="confirmPassword" required>
                         </div>
                         <button type="submit" class="btn btn-complete w-100">Conferma</button>
                     </form>
