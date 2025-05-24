@@ -4,7 +4,7 @@ import http from "http";
 import fs from "fs";
 import express, { NextFunction, Request, Response } from "express";
 
-// Extend Request type to include user property
+// Extend Express Request type
 declare global {
     namespace Express {
         interface Request {
@@ -12,6 +12,7 @@ declare global {
         }
     }
 }
+import { config } from './config';
 import { MongoClient, ObjectId } from "mongodb";
 import cors from "cors";
 import fileUpload from "express-fileupload";
@@ -19,9 +20,17 @@ import bodyParser from "body-parser";
 import path from "path";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 import Stripe from 'stripe';
-const stripe = new Stripe('sk_test_51RSFuTQo9KXRXzPRpGfXYINSV2dApNzwBOz5BBHoduOW0oLBCrUKYk4E1CKd3h2SmtFMmoTmbKW5D0aWHOPgFdCB00c23oWzNc');
+
+// Load environment variables first
+dotenv.config();
+
+if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is not defined in environment variables');
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 
 // Carica le variabili di ambiente dal file .env

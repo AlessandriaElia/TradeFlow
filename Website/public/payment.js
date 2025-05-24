@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize Stripe with your public key
+    // Initialize Stripe with the public key
     const stripe = Stripe('pk_test_51RSFuTQo9KXRXzPRXz9F7wxDQpOPbWKgODwWXY8C46bGph0UBTpwSSuRTjnWvzyiMMfBcFYDvxEjRwYpmRhW1yxn00ECjKHrOk');
     const cartItems = document.getElementById("cartItems");
     const cart = getUserCart();
