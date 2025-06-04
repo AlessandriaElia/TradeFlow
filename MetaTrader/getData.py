@@ -412,7 +412,7 @@ def trova_cartella_metatrader():
 
 # Generate and save signals
 pair_signal_file_local = "pair_signals.csv"
-metatrader_path = r"C:\Users\user\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5\Files\pair_signals.csv"
+metatrader_path = r"C:\Users\user\AppData\Roaming\MetaQuotes\Terminal\Common\Files\pair_signals.csv"
 
 # Function to write the signals to a CSV file
 def write_signals_to_csv(filepath, signals):
@@ -440,9 +440,10 @@ def write_signals_to_csv(filepath, signals):
 write_signals_to_csv(pair_signal_file_local, trading_opportunities)
 print(f"\n✅ File '{pair_signal_file_local}' generato nella cartella corrente.")
 
-# Save in MetaTrader directory
+# Save in MetaTrader directory (Common)
 try:
     write_signals_to_csv(metatrader_path, trading_opportunities)
-    print(f"✅ File salvato nella cartella di MetaTrader:\n{metatrader_path}")
+    print(f"✅ File salvato nella cartella comune di MetaTrader:\n{metatrader_path}")
 except Exception as e:
     print(f"⚠️ Errore nel salvare il file in MetaTrader: {str(e)}")
+    print("Verifica che la cartella esista e che tu abbia i permessi di scrittura")
