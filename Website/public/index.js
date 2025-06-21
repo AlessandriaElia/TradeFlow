@@ -1,4 +1,10 @@
 "use strict";
+
+/**
+ * Controlla se l'EA è già stato acquistato dall'utente loggato
+ * @param {number} eaId 
+ * @returns {Promise<boolean>}
+ */
 async function checkIfAlreadyPurchased(eaId) {
     const token = localStorage.getItem("token");
     if (!token) return false;
@@ -11,6 +17,7 @@ async function checkIfAlreadyPurchased(eaId) {
         return false;
     }
 }
+
 // Funzioni di utilità per il carrello per utente
 function getUserCartKey() {
     const token = localStorage.getItem("token");
@@ -39,6 +46,7 @@ $(document).ready(function () {
     let bestEaList = $("#bestEaList");
     let allEAs = []; // Variabile globale per memorizzare gli EA ricevuti
 
+    // Elementi della navbar per la gestione autenticazione
     const authArea = $("#authArea");
     const loginSignupButtons = $("#loginSignupButtons");
     const userGreeting = $("#userGreeting");
@@ -48,7 +56,7 @@ $(document).ready(function () {
     const cartNavLink = $("#cartNavLink");
     const cartLink = $("#cartLink");
 
-    // Controlla se l'utente è loggato
+    // Controlla se l'utente è loggato e aggiorna la navbar di conseguenza
     const token = localStorage.getItem("token");
     if (token) {
         try {
@@ -59,20 +67,20 @@ $(document).ready(function () {
             userGreeting.removeClass("d-none");
             cartLink.removeClass("d-none");
             logoutButton.removeClass("d-none");
-            // Aggiungi questa linea per mostrare il link della dashboard
+            // Mostra il link della dashboard
             $("#dashboardLink").removeClass("d-none");
         } catch (error) {
             console.error("Errore nella decodifica del token:", error);
         }
     }
 
-    // Gestione del logout
+    // Gestione del logout: rimuove il token e ricarica la pagina
     $("#logout").on("click", function () {
         localStorage.removeItem("token");
         location.reload();
     });
 
-    // Gestione click sul carrello
+    // Gestione click sul carrello: se vuoto mostra alert, altrimenti va alla pagina pagamento
     cartNavLink.on("click", function (e) {
         e.preventDefault();
         const cart = getUserCart();
@@ -83,9 +91,10 @@ $(document).ready(function () {
         window.location.href = "payment.html";
     });
 
+    // Recupera e mostra tutti gli EA all'avvio
     fetchData();
 
-    // Event listener per i filtri
+    // Event listener per i filtri (popolari, gratis, a pagamento, tutti)
     $(".filter-btn").on("click", function () {
         const filter = $(this).data("filter");
         applyFilter(filter);
@@ -97,7 +106,10 @@ $(document).ready(function () {
         applySearch(searchTerm);
     });
 
-    // Funzione per applicare i filtri
+    /**
+     * Applica il filtro selezionato agli EA
+     * @param {string} filter 
+     */
     function applyFilter(filter) {
         let filteredEAs = [];
         switch (filter) {
@@ -118,13 +130,19 @@ $(document).ready(function () {
         displayEAs(filteredEAs);
     }
 
-    // Funzione per applicare la ricerca
+    /**
+     * Applica la ricerca per nome agli EA
+     * @param {string} searchTerm 
+     */
     function applySearch(searchTerm) {
         const searchedEAs = allEAs.filter(ea => ea.name.toLowerCase().includes(searchTerm));
         displayEAs(searchedEAs);
     }
 
-    // Modifica la funzione displayEAs
+    /**
+     * Mostra le card degli EA nella pagina
+     * @param {Array} eas 
+     */
     async function displayEAs(eas) {
         bestEaList.empty();
         
@@ -177,19 +195,21 @@ $(document).ready(function () {
             bestEaList.append(card);
         }
     
-        // Aggiungi event listener ai pulsanti
+        // Aggiungi event listener ai pulsanti delle card (solo quelli abilitati)
         $(".card-button").not("[disabled]").on("click", function() {
             const eaId = $(this).data("id");
             window.location.href = `ea.html?id=${eaId}`;
         });
     }
 
-    // Funzione per recuperare i dati degli EA
+    /**
+     * Recupera i dati degli EA dal server e li mostra
+     */
     async function fetchData() {
         try {
             const response = await inviaRichiesta("GET", "/api/experts");
             if (response.status === 200) {
-                allEAs = response.data.experts; // Memorizziamo i dati una sola volta
+                allEAs = response.data.experts; 
                 displayEAs(allEAs);
             } else {
                 console.error("Errore nel recupero degli EA:", response.err);
@@ -198,4 +218,44 @@ $(document).ready(function () {
             console.error("Errore nella richiesta:", error);
         }
     }
+
+    /**
+     * Gestione invio messaggio di contatto allo staff TradeFlow
+     */
+    $("#contactForm").on("submit", async function(e) {
+        e.preventDefault();
+
+        const name = $("#name").val().trim();
+        const email = $("#email").val().trim();
+        const message = $("#message").val().trim();
+
+        // Validazione campi obbligatori
+        if (!name || !email || !message) {
+            alert("Per favore, compila tutti i campi");
+            return;
+        }
+
+        // Validazione formato email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Per favore, inserisci un indirizzo email valido");
+            return;
+        }
+
+        try {
+            // Invia la richiesta POST usando inviaRichiesta
+            const result = await inviaRichiesta("POST", "/api/messages", { name, email, message });
+
+            if (result.status === 201) {
+                alert("Messaggio inviato con successo!");
+                // Pulisci il form
+                $("#contactForm")[0].reset();
+            } else {
+                throw new Error(result.err || (result.data && result.data.error) || "Errore nell'invio del messaggio");
+            }
+        } catch (error) {
+            console.error("Errore:", error);
+            alert("Si è verificato un errore durante l'invio del messaggio");
+        }
+    });
 });

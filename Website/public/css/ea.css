@@ -1,11 +1,6 @@
 /* Navbar */
 
-.navbar-scrolled {
-    background-color: rgba(0, 0, 0, 0.8)!important;
-    transition: background-color 0.3s!important;
-  }
-  
-  .navbar {
+.navbar {
     position: fixed;
     top: 0;
     left: 0;
@@ -14,7 +9,7 @@
     align-items: center;
     gap: 30px;
     z-index: 10;
-    background-color: rgba(0, 0, 0, 0.7); 
+    background-color: rgba(0, 0, 0, 0.9) !important; /* Sfondo nero fisso */
   }
   
   .navbar ul {
@@ -58,3 +53,25 @@
   .navbar ul li a:hover {
     color: #ddd;
   }
+
+  /* Rating */
+
+.rating-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.stars-container {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.star {
+    color: gold;
+    transition: all 0.2s ease;
+    padding: 0 5px;
+}
+
+.star:hover {
+    transform: scale(1.2);
+}

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize Stripe with the public key
+    // Inizializza Stripe con la tua chiave pubblica
     const stripe = Stripe('pk_test_51RSFuTQo9KXRXzPRXz9F7wxDQpOPbWKgODwWXY8C46bGph0UBTpwSSuRTjnWvzyiMMfBcFYDvxEjRwYpmRhW1yxn00ECjKHrOk');
     const cartItems = document.getElementById("cartItems");
     const cart = getUserCart();
@@ -59,28 +59,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const response = await fetch('/api/payment/create-intent', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items: cart })
-            });
+            const result = await inviaRichiesta(
+                "POST",
+                "/api/payment/create-intent",
+                { items: cart }
+            );
 
-            const session = await response.json();
-
-            if (!response.ok) {
-                throw new Error(session.error || 'Errore durante il pagamento');
+            if (result.status !== 200 || !result.data || !result.data.id) {
+                throw new Error((result.data && result.data.error) || result.err || 'Errore durante il pagamento');
             }
 
             // Redirect to Stripe Checkout
-            const result = await stripe.redirectToCheckout({
-                sessionId: session.id
+            const stripeResult = await stripe.redirectToCheckout({
+                sessionId: result.data.id
             });
 
-            if (result.error) {
-                throw new Error(result.error.message);
+            if (stripeResult.error) {
+                throw new Error(stripeResult.error.message);
             }
 
         } catch (error) {

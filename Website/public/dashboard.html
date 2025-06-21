@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
-    <!-- Navbar (identica a index.html) -->
+    <!-- Navbar standardizzata da usare in tutte le pagine -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-transparent">
         <div class="container">
             <a class="navbar-brand me-3" href="index.html">
@@ -34,25 +34,31 @@
                         <a class="nav-link" href="index.html#contact">Contatti</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="payment.html" id="cartNavLink">
-                            <i class="fas fa-shopping-cart"></i> Carrello
-                        </a>
+                <ul class="navbar-nav ms-auto" id="authArea">
+                    <li class="nav-item d-flex align-items-center" id="loginSignupButtons" style="gap: 10px;">
+                        <a class="nav-link" href="login.html" style="color: white; font-weight: bold;">Login</a>
+                        <a class="nav-link" href="signup.html" style="color: white; font-weight: bold;">Sign Up</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="logout">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
+                    <li class="nav-item d-none" id="userGreeting">
+                        <span class="nav-link">Ciao, <span id="username"></span></span>
+                    </li>
+                    <li class="nav-item d-none" id="dashboardLink">
+                        <a class="nav-link" href="dashboard.html" style="color: white; font-weight: bold;">Dashboard</a>
+                    </li>
+                    <li class="nav-item d-none" id="cartLink">
+                        <a class="nav-link" href="#" style="color: white; font-weight: bold;" id="cartNavLink">Carrello</a>
+                    </li>
+                    <li class="nav-item d-none" id="logoutButton">
+                        <a class="nav-link" href="#" id="logout" style="color: white; font-weight: bold;">Logout</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Dashboard Content -->
+    <!-- Contenuto Dashboard -->
     <div class="dashboard-container">
-        <!-- User Profile Section -->
+        <!-- Sezione profilo utente -->
         <section class="dashboard-section profile-section">
             <div class="container">
                 <div class="section-header text-center">
@@ -84,7 +90,7 @@
             </div>
         </section>
 
-        <!-- Purchased EAs Section -->
+        <!-- Sezione EAs comprati -->
         <section class="dashboard-section purchased-section">
             <div class="container">
                 <div class="section-header text-center">
@@ -93,12 +99,12 @@
                 </div>
                 
                 <div class="ea-grid" id="purchasedEAList">
-                    <!-- Will be populated by JavaScript -->
+                    <!-- Popolato dinamicamente -->
                 </div>
             </div>
         </section>
 
-        <!-- Published EAs Section -->
+        <!-- Sezione EAs pubblicati -->
         <section class="dashboard-section published-section">
             <div class="container">
                 <div class="section-header text-center">
@@ -110,14 +116,14 @@
                 </div>
                 
                 <div class="ea-grid" id="publishedEAList">
-                    <!-- Will be populated by JavaScript -->
+                    <!-- Popolato dinamicamente -->
                 </div>
             </div>
         </section>
     </div>
 
     <!-- Modals -->
-    <!-- Change Password Modal -->
+    <!-- Modal cambio password -->
     <div class="modal fade" id="changePasswordModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -126,7 +132,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Update the Change Password Modal form -->
+                    <!-- Modal aggiorna password -->
                     <form id="changePasswordForm">
                         <div class="mb-3">
                             <label>Password Attuale</label>
@@ -147,7 +153,7 @@
         </div>
     </div>
 
-    <!-- Payment Methods Modal -->
+    <!--  Modal metodo di pagamento -->
     <div class="modal fade" id="paymentMethodsModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -157,7 +163,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="payment-methods-list">
-                        <!-- Example payment method -->
+                        <!-- Esempio metodo di pagamento -->
                         <div class="payment-method">
                             <i class="fab fa-cc-visa fa-2x me-2"></i>
                             <span>**** **** **** 1234</span>
@@ -174,7 +180,7 @@
         </div>
     </div>
 
-    <!-- Upload EA Modal -->
+    <!-- Modal carica EAs -->
     <div class="modal fade" id="uploadEAModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -182,27 +188,32 @@
                     <h5 class="modal-title"><i class="fas fa-upload me-2"></i>Pubblica Expert Advisor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <!-- Modal carica EA -->
                 <div class="modal-body">
                     <form id="uploadEAForm">
                         <div class="mb-3">
                             <label>Nome EA</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" class="form-control" id="eaName" required>
                         </div>
                         <div class="mb-3">
                             <label>Descrizione</label>
-                            <textarea class="form-control" rows="3" required></textarea>
+                            <textarea class="form-control" id="eaDescription" rows="3" required></textarea>
                         </div>
                         <div class="mb-3">
                             <label>Prezzo (USD)</label>
-                            <input type="number" class="form-control" min="0" step="0.01" required>
+                            <input type="number" class="form-control" id="eaPrice" min="0" step="0.01" required>
                         </div>
                         <div class="mb-3">
-                            <label>File EA</label>
-                            <input type="file" class="form-control" required>
+                            <label>File EA (.ex4/.mq4)</label>
+                            <input type="file" class="form-control" id="eaFile" accept=".ex4,.mq4" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>File Performance (JSON)</label>
+                            <input type="file" class="form-control" id="eaPerformance" accept=".json" required>
                         </div>
                         <div class="mb-3">
                             <label>Immagine Anteprima</label>
-                            <input type="file" class="form-control" accept="image/*" required>
+                            <input type="file" class="form-control" id="eaImage" accept="image/*" required>
                         </div>
                         <button type="submit" class="btn btn-complete w-100">Pubblica</button>
                     </form>

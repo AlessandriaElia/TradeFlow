@@ -5,28 +5,20 @@ document.getElementById("loginForm").addEventListener("submit", async (event) =>
   const password = document.getElementById("password").value;
 
   try {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const result = await response.json();
+    const result = await inviaRichiesta("POST", "/api/login", { email, password });
     const messageElement = document.getElementById("message");
 
-    if (response.ok) {
+    if (result.status === 200) {
       messageElement.textContent = "Login avvenuto con successo!";
       messageElement.style.color = "green";
 
       // Salva il token JWT nel localStorage
-      localStorage.setItem("token", result.token);
+      localStorage.setItem("token", result.data.token);
 
       // Reindirizza alla homepage
       window.location.href = "index.html";
     } else {
-      messageElement.textContent = result.error || "Errore durante il login.";
+      messageElement.textContent = result.err || (result.data && result.data.error) || "Errore durante il login.";
       messageElement.style.color = "red";
     }
   } catch (error) {

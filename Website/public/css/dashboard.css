@@ -138,3 +138,11 @@
     transform: translateY(-2px);
     color: white;
 }
+
+.d-none {
+    display: none !important;
+}
+
+.navbar-nav .nav-item {
+    transition: all 0.3s ease;
+}

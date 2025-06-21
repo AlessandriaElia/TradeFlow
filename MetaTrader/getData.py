@@ -127,7 +127,6 @@ def classify_delta_tot(currency_symbol, delta_tot):
     Vantaggi:
     1. Tiene conto della storia specifica di ogni valuta
     2. Range calibrati su dati reali
-    3. Classificazione intuitiva con emoji
     """
     ranges = CURRENCY_RANGES[currency_symbol]
     if delta_tot > 0:

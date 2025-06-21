@@ -24,27 +24,14 @@ function setUserCart(cart) {
     localStorage.setItem(cartKey, JSON.stringify(cart));
 }
 
-// Update the checkIfAlreadyPurchased function
+// Usa inviaRichiesta per controllare se l'EA è già stato acquistato
 async function checkIfAlreadyPurchased(eaId) {
     const token = localStorage.getItem("token");
     if (!token) return false;
     
     try {
-        const response = await fetch(`/api/payments/check/${eaId}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to check purchase status');
-        }
-
-        const data = await response.json();
-        console.log("Purchase check response:", data);
-        return data.purchased;
+        const response = await inviaRichiesta("GET", `/api/payments/check/${eaId}`);
+        return response.status === 200 && response.data.purchased;
     } catch (error) {
         console.error("Errore nel controllo acquisto:", error);
         return false;
@@ -117,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     try {
-        // Recupera i dettagli dell'Expert Advisor dal server
+        // Recupera i dettagli dell'Expert Advisor dal server usando inviaRichiesta
         const response = await inviaRichiesta("GET", `/api/experts/${eaId}`);
         console.log("URL della richiesta:", `/api/experts/${eaId}`);
         console.log("Risposta del server:", response);
@@ -186,7 +173,63 @@ document.addEventListener("DOMContentLoaded", async function () {
                 addToCartContainer.addClass("d-none");
             }
 
-            // Genera il grafico delle performance con Plotly
+            // Aggiungi il calcolo della performance media
+            $("#ea-average-performance").text(calculateAveragePerformance(ea.performance.data));
+
+            // Aggiungi il sistema di rating
+            const ratingContainer = $(`
+                <div class="rating-container mt-3">
+                    <h4>Valuta questo EA:</h4>
+                    <div class="stars-container">
+                        ${Array(5).fill().map((_, i) => 
+                            `<span class="star" data-rating="${i + 1}">☆</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `);
+
+            $("#ea-stars").parent().after(ratingContainer);
+
+            // Gestisci l'hover sulle stelle
+            $(".star").hover(
+                function() {
+                    const rating = $(this).data("rating");
+                    $(".star").each((i, star) => {
+                        $(star).text(i < rating ? "★" : "☆");
+                    });
+                },
+                function() {
+                    if (!$(this).hasClass("selected")) {
+                        $(".star").text("☆");
+                    }
+                }
+            );
+
+            // Gestisci il click sulle stelle
+            $(".star").click(async function() {
+                if (!localStorage.getItem("token")) {
+                    alert("Devi effettuare il login per votare!");
+                    return;
+                }
+
+                const rating = $(this).data("rating");
+                try {
+                    const result = await submitRating(ea.id, rating);
+                    ea.stars = result.newAverageRating;
+                    ea.reviews++;
+                    
+                    // Aggiorna le stelle visualizzate
+                    $("#ea-stars").text('★'.repeat(Math.round(ea.stars)) + 
+                                     '☆'.repeat(5 - Math.round(ea.stars)));
+                    $("#ea-reviews").text(ea.reviews);
+                    
+                    alert("Grazie per la tua valutazione!");
+                } catch (error) {
+                    alert("Errore nell'invio della valutazione");
+                }
+            });
+
+            // Genera il grafico delle performance
             generatePerformanceChart(ea.performance);
         } else {
             console.error("Errore nel recupero dei dettagli dell'EA:", response.err);
@@ -198,30 +241,66 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
+// Funzione per generare il grafico delle performance
 function generatePerformanceChart(performance) {
+    if (!performance || !performance.data || !Array.isArray(performance.data)) {
+        console.error("Dati performance non validi:", performance);
+        return;
+    }
+
     const data = [
         {
-            x: Array.from({ length: performance.data.length }, (_, i) => i + 1), // Giorni
-            y: performance.data, // Valori di performance
+            x: Array.from({ length: performance.data.length }, (_, i) => i + 1),
+            y: performance.data,
             type: "scatter",
             mode: "lines+markers",
-            marker: { color: "blue" },
-            line: { shape: "spline" },
+            marker: { 
+                color: "#3A75C4",
+                size: 6 
+            },
+            line: { 
+                shape: "spline",
+                width: 2,
+                color: "#3A75C4"
+            },
             name: "Performance"
         }
     ];
 
     const layout = {
-        title: "Performance nel tempo",
-        xaxis: { title: "Giorni" },
-        yaxis: { title: "Valore (USD)" },
-        paper_bgcolor: "white", // Sfondo bianco per l'intero grafico
-        plot_bgcolor: "white",  // Sfondo bianco per l'area del grafico
-        font: { color: "black" } // Testo nero per contrastare lo sfondo bianco
+        title: {
+            text: "Performance nel tempo",
+            font: { 
+                color: "black",
+                size: 24
+            }
+        },
+        xaxis: { 
+            title: "Giorni",
+            gridcolor: "#e0e0e0",
+            zerolinecolor: "#e0e0e0"
+        },
+        yaxis: { 
+            title: "Valore (USD)",
+            gridcolor: "#e0e0e0",
+            zerolinecolor: "#e0e0e0"
+        },
+        paper_bgcolor: "white",
+        plot_bgcolor: "white",
+        font: { color: "black" },
+        margin: { t: 50, r: 50, b: 50, l: 50 }
     };
 
-    Plotly.newPlot("performanceChart", data, layout);
+    const config = {
+        responsive: true,
+        displayModeBar: true,
+        displaylogo: false
+    };
+
+    Plotly.newPlot("performanceChart", data, layout, config);
 }
+
+// Calcola il massimo drawdown della serie storica
 function calculateMaxDrawdown(data) {
     let maxDrawdown = 0;
     let peak = data[0];
@@ -255,4 +334,37 @@ function calculateSharpeRatio(data) {
 function calculateTotalProfit(data) {
     const profit = ((data[data.length - 1] - data[0]) / data[0]) * 100;
     return profit.toFixed(2) + "%";
+}
+
+// Calcola la performance media giornaliera
+function calculateAveragePerformance(data) {
+    const changes = [];
+    for (let i = 1; i < data.length; i++) {
+        const change = ((data[i] - data[i-1]) / data[i-1]) * 100;
+        changes.push(change);
+    }
+    const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
+    return avgChange.toFixed(2) + "%";
+}
+
+async function submitRating(eaId, rating) {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Utente non autenticato");
+
+        const response = await inviaRichiesta(
+            "POST",
+            `/api/experts/${eaId}/rate`,
+            { rating }
+        );
+
+        if (response.status !== 200) {
+            throw new Error(response.err || (response.data && response.data.error) || 'Errore durante il rating');
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error("Error submitting rating:", error);
+        throw error;
+    }
 }
